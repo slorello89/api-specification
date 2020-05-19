@@ -1,0 +1,435 @@
+openapi: "3.0.3"
+info:
+  version: 0.1.0
+  title: WhatsApp Manager API
+  description: | 
+    The WhatsApp Manager API enables customers to deploy a WhatsApp cluster, perform the One Time Password(OTP) verification, and update profile information 
+  contact:
+    name: Nexmo DevRel
+    email: devrel@nexmo.com
+    url: 'https://developer.nexmo.com/'
+  x-label: Beta
+servers:
+  - url: https://api.nexmo.com/v0.1/whatsapp-manager
+paths:
+  /deployments:
+    post:
+      tags: 
+        - Deployment
+      summary: Provision WhatsApp deployment
+      description: This API request provisions a WhatsApp cluster. The WhatsApp cluster once provisioned will go through the stages `INITIALIZING`, `CREATING_CLUSTER`, `CLUSTER_CREATED`. After the `CLUSTER_CREATED` stage is reached an OTP call or SMS is sent to the number specified causing the deployment status to transition to `CODE_SENT`. After receiving the OTP, use the verify api call to finish the process.
+      operationId: createDeployment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Deployment'
+      responses:
+        '202':
+          description: Accepted.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deployment_id:
+                    type: string
+                    example: aaaaaaaa-bbbb-cccc-dddd-0123456789ab
+          
+        '400':
+          description: Bad Request.          
+        '401':
+          description: Invalid of Missing Credentials
+          
+
+  /deployments/{deployment_id}:
+    get:
+      tags: 
+        - Deployment
+      operationId: get_deployment
+      summary: Get Deployment Status
+      parameters:
+        - in: path
+          name: deployment_id
+          required: true
+          schema:
+            type: string            
+          description: The Deployment ID
+      responses:
+        '200':
+          description: The deployment.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeploymentResponse"
+        '401':
+          description: Invalid or Missing Credentials
+        '404':
+          description: Deployment not found.
+    patch:
+      description: Allows you to resubmit your vname certificate or pin prior to calling the resent OTP request
+      tags: 
+        - Deployment      
+      operationId: updateDeployment
+      summary: Fix Deployment
+      parameters:
+        - in: path
+          name: deployment_id
+          required: true
+          schema:
+            type: string
+          description: The deployment ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/UpdateDeployment'
+      responses:
+        '202':
+          description: Modifications have been Accepted
+        '400':
+          description: Bad Request
+        '401':
+          description: Invalid Credentials
+        '404':
+          description: Deployment Not found.
+        '422':
+          description: Invalid Parameters
+
+  /deployments/{deployment_id}/resend-otp:
+    post:
+      tags:
+        - OTP            
+      summary: Resend OTP
+      description: If you do not receive the code in five minutes then you can request for it to be sent again.
+      operationId: resend-otp
+      parameters:
+        - in: path
+          name: deployment_id
+          required: true
+          schema:
+            type: string            
+          description: The Deployment ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Resend-OTP'
+      responses:        
+        '202':
+          description: Code sent.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResendOtpResponse'                  
+        '400':
+          description: Bad Request.                      
+        '401':
+          description: Invalid or Missing Credentials
+        '404':
+          description: Deployment not found
+        '409':
+          description: Conflict.          
+        '429':
+          description: Too Many Requests.          
+  /deployments/{deployment_id}/verify:
+    post:
+      tags:
+        - OTP      
+      summary: Verify OTP
+      description: When a code is successfully verifed, WhatsApp Manager will move the number from a `CODE_VERIFIED` state to a `FINALIZING` state where additional checks are made and it is assigned to your API Key. Once this is complete it will enter a `READY` state and the number is ready to use.
+      operationId: verify
+      parameters:
+        - in: path
+          name: deployment_id
+          required: true
+          schema:
+            type: string
+            minimum: 1
+          description: The Deployment ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  description: OTP being submitted for verification
+                  example: '674639'
+      responses:
+        '200':
+          description: Accepted.
+          
+        '400':
+          description: Bad Request.         
+        
+        '429':
+          description: Bad Request.          
+
+  /deployments/{deployment_id}/profiles:
+    patch:
+      tags:
+        - Profile      
+      summary: Update WhatsApp Profile
+      operationId: profiles
+      parameters:
+        - in: path
+          name: deployment_id
+          required: true
+          schema:
+            type: string
+            minimum: 1
+          description: The Deployment ID
+      requestBody:
+        description: Provision WhatsApp deployment and trigger OTP.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                about:
+                  type: string
+                  example: about your business
+                  description: Text to display in your profile's About section
+                  minLength: 1
+                  maxLength: 139
+                address:
+                  type: string
+                  description: Your business address
+                  example: 15 Yemen Road, Yemen
+                  minLength: 1
+                  maxLength: 256
+                description:
+                  type: string
+                  description: a description of your business
+                  example: your business description
+                  minLength: 1
+                  maxLength: 256
+                email:
+                  type: string
+                  description: Your business' email
+                  example: your@business-email.com
+                  minLength: 1
+                  maxLength: 256
+                vertical:
+                  description: Your business' industry
+                  type: string
+                  enum:
+                    - Automotive
+                    - Beauty, Spa and Salon
+                    - Clothing and Apparel
+                    - Education
+                    - Entertainment
+                    - Event Planning and Service
+                    - Finance and Banking
+                    - Food and Grocery
+                    - Public Service
+                    - Hotel and Lodging
+                    - Medical and Health
+                    - Non-profit
+                    - Professional Services
+                    - Shopping and Retail
+                    - Travel and Transportation
+                    - Restaurant
+                    - Other
+                websites:
+                  description: "Your business' websites maximum of 2 websites, max website length: 256"
+                  x-nexmo-developer-collection-description-shown: true
+                  type: array
+                  items:
+                    type: string
+                    example: https://your-website-1.com
+                  minItems: 1
+                  maxItems: 2
+                
+      responses:
+        '200':
+          description: OK.
+          
+        '400':
+          description: Bad Request.        
+        '401':
+          description: Invalid Credentials        
+        '404':
+          description: Deployment Not Found
+        '422':
+          description: Invalid Parameters
+
+  /deployments/{deployment_id}/profiles/photos:
+    put:
+      tags:
+        - Profile      
+      summary: Update Profile Photo
+      operationId: profiles-photo
+      parameters:
+        - in: path
+          name: deployment_id
+          required: true
+          schema:
+            type: string
+            minimum: 1
+          description: The Deployment ID
+      requestBody:
+        description: URL pointing to a .png or .jpg. Image must be minimum 192px. max 640px x 640px. max 5MB.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: 
+                - profile_photo_url
+              properties:
+                profile_photo_url:
+                  description: The url for the new profile photo
+                  type: string
+                  example: https://www.img.com/789
+      responses:
+        '201':
+          description: Created.
+          
+        '400':
+          description: Bad Request.
+        '401':
+          description: Invalid Credentials        
+        '404':
+          description: Deployment Not Found
+        '422':
+          description: Invalid Parameters
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    basicAuth:
+      type: http
+      scheme: basic
+
+  schemas:
+    ResendOtpResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Code sent
+        vname:
+          type: string
+          example: your vname        
+    DeploymentResponse:
+      description: A deployment response
+      type: object
+      properties:
+        deployment_id:
+          type: string
+          description: The Deployment id
+          example: aaaaaaaa-bbbb-cccc-dddd-0123456789ab
+        country_code:
+          type: string
+          description: the country code of the deployment e.g. `44`
+          example: '44'
+        number:
+          type: string
+          description: the Number for the deployment e.g. `7877001122`
+          example: '7877001122'
+        api_key:
+          type: string
+          description: the api key the deployment is tied to
+          example: aaa111
+        current_state:
+          type: object
+          description: The current status of the deployment
+          properties:
+            state:
+              type: string
+              description: status code reflecting the deployment's status
+              example: error
+              enum: 
+                - INITIALIZING
+                - CREATING_CLUSTER
+                - CLUSTER_CREATED
+                - CODE_SENT
+                - WRONG_CODE
+                - CODE_VERIFIED
+                - FINALIZING
+                - READY
+                - ERROR
+                - DELETING
+                - DELETED
+            description:
+              type: string
+              description: Description of the deployment status e.g. `Invalid vname certificate`
+              example: Invalid vname certificate
+    Deployment:
+      required:
+        - country_code
+        - number
+        - vname_certificate 
+        - method
+        - waba_id
+      properties:
+        country_code:
+          description: country code of the number being provisioned
+          type: string
+          example: 44'
+        number:
+          description: the WhatsApp number being provisioned
+          type: string
+          example: 7877001122'
+        vname_certificate:
+          $ref: '#/components/schemas/vname_certificate'
+        method:
+          type: string
+          description: The method for delivering the OTP
+          enum:
+            - sms
+            - voice
+        waba_id:
+          type: string
+          description: WABA ID of the WhatsApp Number
+          example: '345676589250625'
+        pin:
+          type: string
+          description: Required if you previously set a pin when creating a WhatsApp number.
+          example: '123456'
+    pin:
+      type: string
+      description: Required if you previously set a pin when creating a WhatsApp number.
+      example: '123456'
+    vname_certificate:
+      description: |
+        Cert retrieved from from your WhatsApp Business dashboard
+        > **Note** this value is refreshed whenever you click the view button
+      type: string
+      example: CnQKMAj669nb79e
+    UpdateDeployment:
+      properties:
+        vname_certificate:
+          $ref: '#/components/schemas/vname_certificate'
+        pin:
+          $ref: "#/components/schemas/pin"
+    Resend-OTP:
+      description: The method for delivering the OTP
+      properties:
+         method:
+          type: string
+          enum:
+            - sms
+            - voice   
+    
+security:
+  - bearerAuth: []
+tags:
+  - name: Deployment
+    description: Create and manage in-progress deployments
+  - name: OTP
+    description: Verify or resend a One Time Password (OTP)
+  - name: Profile
+    description: Update WhatsApp profile
