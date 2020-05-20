@@ -50,12 +50,7 @@ paths:
       operationId: get_deployment
       summary: Get Deployment Status
       parameters:
-        - in: path
-          name: deployment_id
-          required: true
-          schema:
-            type: string            
-          description: The Deployment ID
+        - $ref: "#/components/parameters/deployment_id"
       responses:
         '200':
           description: The deployment.
@@ -74,12 +69,7 @@ paths:
       operationId: updateDeployment
       summary: Fix Deployment
       parameters:
-        - in: path
-          name: deployment_id
-          required: true
-          schema:
-            type: string
-          description: The deployment ID
+        - $ref: "#/components/parameters/deployment_id"
       requestBody:
         required: true
         content:
@@ -97,7 +87,19 @@ paths:
           description: Deployment Not found.
         '422':
           description: Invalid Parameters
-
+    delete:
+      description: Delete a WhatsApp deployment
+      tags:
+        - Deployment
+      summary: Delete Deployment
+      operationId: deleteDeployment
+      parameters:
+        - $ref: "#/components/parameters/deployment_id"
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Deployment Not Found
   /deployments/{deployment_id}/resend-otp:
     post:
       tags:
@@ -106,12 +108,7 @@ paths:
       description: If you do not receive the code in five minutes then you can request for it to be sent again.
       operationId: resend-otp
       parameters:
-        - in: path
-          name: deployment_id
-          required: true
-          schema:
-            type: string            
-          description: The Deployment ID
+        - $ref: "#/components/parameters/deployment_id"
       requestBody:
         required: true
         content:
@@ -143,13 +140,7 @@ paths:
       description: When a code is successfully verifed, WhatsApp Manager will move the number from a `CODE_VERIFIED` state to a `FINALIZING` state where additional checks are made and it is assigned to your API Key. Once this is complete it will enter a `READY` state and the number is ready to use.
       operationId: verify
       parameters:
-        - in: path
-          name: deployment_id
-          required: true
-          schema:
-            type: string
-            minimum: 1
-          description: The Deployment ID
+        - $ref: "#/components/parameters/deployment_id"
       requestBody:
         required: true
         content:
@@ -178,13 +169,7 @@ paths:
       summary: Update WhatsApp Profile
       operationId: profiles
       parameters:
-        - in: path
-          name: deployment_id
-          required: true
-          schema:
-            type: string
-            minimum: 1
-          description: The Deployment ID
+        - $ref: "#/components/parameters/deployment_id"
       requestBody:
         description: Provision WhatsApp deployment and trigger OTP.
         required: true
@@ -268,13 +253,7 @@ paths:
       summary: Update Profile Photo
       operationId: profiles-photo
       parameters:
-        - in: path
-          name: deployment_id
-          required: true
-          schema:
-            type: string
-            minimum: 1
-          description: The Deployment ID
+        - $ref: "#/components/parameters/deployment_id"
       requestBody:
         description: URL pointing to a .png or .jpg. Image must be minimum 192px. max 640px x 640px. max 5MB.
         required: true
@@ -312,7 +291,14 @@ components:
     basicAuth:
       type: http
       scheme: basic
-
+  parameters:
+    deployment_id:
+      in: path
+      name: deployment_id
+      required: true
+      schema:
+        type: string
+      description: The deployment ID
   schemas:
     ResendOtpResponse:
       type: object
