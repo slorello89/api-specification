@@ -31,17 +31,20 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  deployment_id:
-                    type: string
-                    example: aaaaaaaa-bbbb-cccc-dddd-0123456789ab
+                $ref: "#/components/schemas/DeploymentResponse"
           
         '400':
-          description: Bad Request.          
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorInvalidJson"
         '401':
-          description: Invalid of Missing Credentials
-          
+          description: Invalid Credentials        
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorUnauthorized"
 
   /deployments/{deployment_id}:
     get:
@@ -57,11 +60,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/DeploymentResponse"
+                $ref: "#/components/schemas/DeploymentResponse"        
         '401':
-          description: Invalid or Missing Credentials
+          description: Invalid Credentials        
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorUnauthorized"
         '404':
-          description: Deployment not found.
+          description: Deployment Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorNotFound"
     patch:
       description: Allows you to resubmit your vname certificate or pin prior to calling the resent OTP request
       tags: 
@@ -79,14 +90,34 @@ paths:
       responses:
         '202':
           description: Modifications have been Accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeploymentResponse"
         '400':
-          description: Bad Request
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorInvalidJson"
         '401':
-          description: Invalid Credentials
+          description: Invalid Credentials        
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorUnauthorized"
         '404':
-          description: Deployment Not found.
+          description: Deployment Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorNotFound"
         '422':
           description: Invalid Parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorUnprocessable"
     delete:
       description: Delete a WhatsApp deployment
       tags:
@@ -97,9 +128,19 @@ paths:
         - $ref: "#/components/parameters/deployment_id"
       responses:
         '204':
-          description: No Content
+          description: No Content        
+        '401':
+          description: Invalid Credentials        
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorUnauthorized"
         '404':
           description: Deployment Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorNotFound"
   /deployments/{deployment_id}/resend-otp:
     post:
       tags:
@@ -123,21 +164,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResendOtpResponse'                  
         '400':
-          description: Bad Request.                      
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorInvalidJson"
         '401':
-          description: Invalid or Missing Credentials
+          description: Invalid Credentials        
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorUnauthorized"
         '404':
-          description: Deployment not found
-        '409':
-          description: Conflict.          
+          description: Deployment Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorNotFound"        
         '429':
-          description: Too Many Requests.          
+          description: Throttled.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorThrottled"
   /deployments/{deployment_id}/verify:
     post:
       tags:
         - OTP      
       summary: Verify OTP
-      description: When a code is successfully verifed, WhatsApp Manager will move the number from a `CODE_VERIFIED` state to a `FINALIZING` state where additional checks are made and it is assigned to your API Key. Once this is complete it will enter a `READY` state and the number is ready to use.
+      description: When a code is successfully verified, WhatsApp Manager will move the number from a `CODE_VERIFIED` state to a `FINALIZING` state where additional checks are made and it is assigned to your API Key. Once this is complete it will enter a `READY` state and the number is ready to use.
       operationId: verify
       parameters:
         - $ref: "#/components/parameters/deployment_id"
@@ -154,20 +209,61 @@ paths:
                   example: '674639'
       responses:
         '200':
-          description: Accepted.
-          
-        '400':
-          description: Bad Request.         
-        
-        '429':
-          description: Bad Request.          
+          description: OK         
+          content:
+            application/json:
+              schema:
+                properties:                  
+                  deployment_id:
+                    example: aaaaaaaa-bbbb-cccc-dddd-0123456789ab
+                    type: string
+                    description: the id of your deployment 
+                  status:
+                    type: string
+                    example: 16
+                    enum:
+                      - "0"
+                      - "16"
+                      - "17"
+                    description: |
+                      Code | Text | Description
+                      -- | -- | --
+                      0 | Success | The request was accepted and the deployment has been created
+                      16 | Invalid Code | The code sent does not match the expected value
+                      17 | Too many tries | An invalid code has been sent too many times                      
 
-  /deployments/{deployment_id}/profiles:
+        '400':
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorInvalidJson"
+        '401':
+          description: Invalid Credentials        
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorUnauthorized"
+        '404':
+          description: Deployment Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorNotFound"       
+        '429':
+          description: Throttled.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorThrottled"
+          
+
+  /deployments/{deployment_id}/profile:
     patch:
       tags:
         - Profile      
       summary: Update WhatsApp Profile
-      operationId: profiles
+      operationId: updateProfile
       parameters:
         - $ref: "#/components/parameters/deployment_id"
       requestBody:
@@ -181,27 +277,27 @@ paths:
                 about:
                   type: string
                   example: about your business
-                  description: Text to display in your profile's About section
+                  description: Text to display in your profile's About section - max 139 characters.
                   minLength: 1
                   maxLength: 139
                 address:
                   type: string
-                  description: Your business address
+                  description: Your business address - max 256 characters.
                   example: 15 Yemen Road, Yemen
                   minLength: 1
                   maxLength: 256
                 description:
                   type: string
-                  description: a description of your business
+                  description: a description of your business - max 256 characters
                   example: your business description
                   minLength: 1
                   maxLength: 256
                 email:
                   type: string
-                  description: Your business' email
-                  example: your@business-email.com
+                  description: Your business' email - max 128 characters
+                  example: you@example.com
                   minLength: 1
-                  maxLength: 256
+                  maxLength: 128
                 vertical:
                   description: Your business' industry
                   type: string
@@ -229,7 +325,7 @@ paths:
                   type: array
                   items:
                     type: string
-                    example: https://your-website-1.com
+                    example: https://example.com
                   minItems: 1
                   maxItems: 2
                 
@@ -238,20 +334,36 @@ paths:
           description: OK.
           
         '400':
-          description: Bad Request.        
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorInvalidJson"
         '401':
           description: Invalid Credentials        
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorUnauthorized"
         '404':
           description: Deployment Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorNotFound"
         '422':
           description: Invalid Parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorUnprocessable"
 
-  /deployments/{deployment_id}/profiles/photos:
+  /deployments/{deployment_id}/profile/photo:
     put:
       tags:
         - Profile      
       summary: Update Profile Photo
-      operationId: profiles-photo
+      operationId: updateProfilePhoto
       parameters:
         - $ref: "#/components/parameters/deployment_id"
       requestBody:
@@ -262,24 +374,39 @@ paths:
             schema:
               type: object
               required: 
-                - profile_photo_url
+                - url
               properties:
-                profile_photo_url:
+                url:
                   description: The url for the new profile photo
                   type: string
-                  example: https://www.img.com/789
+                  example: https://www.example.com/img.png
       responses:
-        '201':
-          description: Created.
-          
+        '200':
+          description: OK.
         '400':
           description: Bad Request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorInvalidJson"
         '401':
           description: Invalid Credentials        
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorUnauthorized"
         '404':
           description: Deployment Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorNotFound"
         '422':
           description: Invalid Parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorUnprocessable"
 
 components:
 
@@ -300,6 +427,128 @@ components:
         type: string
       description: The deployment ID
   schemas:
+    ErrorThrottled:
+      type: object
+      required:
+        - type
+        - title
+        - detail
+        - instance
+      properties:
+        type:
+          type: string
+          description: Link to error / remediation options
+          example: https://developer.nexmo.com/api-errors/whatsapp-provisioning#throttled
+        title:
+          type: string
+          description: Generic error message
+          example: Throttled
+        detail:
+          type: string
+          description: Additional information about the error
+          example: Exceeded rate limit for this API, please wait and try again
+        instance:
+          type: string
+          description: Internal Trace ID
+          example: bf0ca0bf927b3b52e3cb03217e1a1ddf
+    ErrorUnprocessable:
+      type: object
+      required:
+        - type
+        - title
+        - detail
+        - instance
+      properties:
+        type:
+          type: string
+          description: Link to error / remediation options
+          example: https://developer.nexmo.com/api-errors/whatsapp-provisioning#unprocessable
+        title:
+          type: string
+          description: Generic error message
+          example: Unprocessable Entity
+        detail:
+          type: string
+          description: Additional information about the error
+          example: Request was missing a parameter and could not be processed
+        instance:
+          type: string
+          description: Internal Trace ID
+          example: bf0ca0bf927b3b52e3cb03217e1a1ddf
+    ErrorNotFound:
+      type: object
+      required:
+        - type
+        - title
+        - detail
+        - instance
+      properties:
+        type:
+          type: string
+          description: Link to error / remediation options
+          example: https://developer.nexmo.com/api-errors#not-found
+        title:
+          type: string
+          description: Generic error message
+          example: Not Found
+        detail:
+          type: string
+          description: Additional information about the error
+          example: Requested resource wasn't found
+        instance:
+          type: string
+          description: Internal Trace ID
+          example: bf0ca0bf927b3b52e3cb03217e1a1ddf
+    ErrorUnauthorized:
+      type: object
+      required:
+        - type
+        - error
+        - detail
+        - instance
+      properties:
+        type:
+          type: string
+          description: Machine readable error type
+          example: https://developer.nexmo.com/api-errors#unauthorized
+        error:
+          type: string
+          description: Error title
+          example: Unauthorized
+        detail:
+          type: string
+          description: Unauthorized
+          example: Unauthorized
+        instance:
+          type: string
+          description: Internal Trace ID
+          example: bf0ca0bf927b3b52e3cb03217e1a1ddf
+    ErrorInvalidJson:
+      description: Invalid JSON
+      type: object
+      required:
+        - type
+        - title
+        - detail
+        - instance
+      properties:
+        type:
+          type: string
+          description: Link to error / remediation options
+          example: https://developer.nexmo.com/api-errors#invalid-json
+        title:
+          type: string
+          description: Generic error message
+          example: Invalid JSON
+        detail:
+          type: string
+          description: Additional information about the error
+          example: 'Unexpected character (''"'' (code 34)): was expecting comma to separate Object entries'
+        instance:
+          type: string
+          description: Internal Trace ID
+          example: bf0ca0bf927b3b52e3cb03217e1a1ddf
+        
     ResendOtpResponse:
       type: object
       properties:
@@ -308,7 +557,11 @@ components:
           example: Code sent
         vname:
           type: string
-          example: your vname        
+          example: your vname
+        otp_method:
+          type: string
+          example: sms
+          description: The method the OTP resend will use.   
     DeploymentResponse:
       description: A deployment response
       type: object
@@ -333,7 +586,7 @@ components:
           type: object
           description: The current status of the deployment
           properties:
-            state:
+            title:
               type: string
               description: status code reflecting the deployment's status
               example: error
@@ -349,7 +602,7 @@ components:
                 - ERROR
                 - DELETING
                 - DELETED
-            description:
+            detail:
               type: string
               description: Description of the deployment status e.g. `Invalid vname certificate`
               example: Invalid vname certificate
@@ -358,20 +611,20 @@ components:
         - country_code
         - number
         - vname_certificate 
-        - method
+        - otp_method
         - waba_id
       properties:
         country_code:
           description: country code of the number being provisioned
           type: string
-          example: 44'
+          example: 44
         number:
           description: the WhatsApp number being provisioned
           type: string
-          example: 7877001122'
+          example: 7877001122
         vname_certificate:
           $ref: '#/components/schemas/vname_certificate'
-        method:
+        otp_method:
           type: string
           description: The method for delivering the OTP
           enum:
@@ -404,7 +657,7 @@ components:
     Resend-OTP:
       description: The method for delivering the OTP
       properties:
-         method:
+         otp_method:
           type: string
           enum:
             - sms
@@ -419,3 +672,15 @@ tags:
     description: Verify or resend a One Time Password (OTP)
   - name: Profile
     description: Update WhatsApp profile
+x-errors:
+  unprocessable:
+    description: Parameters were valid JSON but something was missing or wrongly formatted
+    resolution: Fix parameters to the API and try again
+    link:
+      url: /api/whatsapp-provisioning#unprocessable
+  throttled: 
+    description: Too many requests have been made on this endpoint
+    resolution: Wait a moment and try again
+    link:
+      url: /api/whatsapp-provisioning#throttled
+    
