@@ -377,7 +377,7 @@ paths:
                 - url
               properties:
                 url:
-                  description: The url for the new profile photo
+                  description: URL pointing to a .png or .jpg. Image must be minimum 192px. max 640px x 640px. max 5MB.
                   type: string
                   example: https://www.example.com/img.png
       responses:
