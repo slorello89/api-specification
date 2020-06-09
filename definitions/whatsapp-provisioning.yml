@@ -48,6 +48,7 @@ paths:
 
   /deployments/{deployment_id}:
     get:
+      description: Retrieves information about the deployment at the given deployment id.
       tags: 
         - Deployment
       operationId: get_deployment
@@ -208,7 +209,7 @@ paths:
                   description: OTP being submitted for verification
                   example: '674639'
       responses:
-        '200':
+        '201':
           description: OK         
           content:
             application/json:
@@ -220,18 +221,7 @@ paths:
                     description: the id of your deployment 
                   status:
                     type: string
-                    example: 16
-                    enum:
-                      - "0"
-                      - "16"
-                      - "17"
-                    description: |
-                      Code | Text | Description
-                      -- | -- | --
-                      0 | Success | The request was accepted and the deployment has been created
-                      16 | Invalid Code | The code sent does not match the expected value
-                      17 | Too many tries | An invalid code has been sent too many times                      
-
+                    example: Deployment was Created
         '400':
           description: Bad Request.
           content:
@@ -250,16 +240,21 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorNotFound"       
+        '422':
+          description: Unprocessable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorVerificationFailed"       
         '429':
           description: Throttled.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorThrottled"
-          
-
   /deployments/{deployment_id}/profile:
     patch:
+      description: Updates profile information for deployment.
       tags:
         - Profile      
       summary: Update WhatsApp Profile
@@ -301,6 +296,7 @@ paths:
                 vertical:
                   description: Your business' industry
                   type: string
+                  example: Food and Grocery
                   enum:
                     - Automotive
                     - Beauty, Spa and Salon
@@ -323,12 +319,12 @@ paths:
                   description: "Your business' websites maximum of 2 websites, max website length: 256"
                   x-nexmo-developer-collection-description-shown: true
                   type: array
+                  example:
+                      - https://example.com
                   items:
                     type: string
-                    example: https://example.com
                   minItems: 1
                   maxItems: 2
-                
       responses:
         '200':
           description: OK.
@@ -360,6 +356,7 @@ paths:
 
   /deployments/{deployment_id}/profile/photo:
     put:
+      description: Replaces profile photo with photo at the given URL for the deployment.
       tags:
         - Profile      
       summary: Update Profile Photo
@@ -422,6 +419,7 @@ components:
     deployment_id:
       in: path
       name: deployment_id
+      example: aaaaaaaa-bbbb-cccc-dddd-0123456789ab
       required: true
       schema:
         type: string
@@ -447,6 +445,30 @@ components:
           type: string
           description: Additional information about the error
           example: Exceeded rate limit for this API, please wait and try again
+        instance:
+          type: string
+          description: Internal Trace ID
+          example: bf0ca0bf927b3b52e3cb03217e1a1ddf
+    ErrorVerificationFailed:
+      type: object
+      required:
+        - type
+        - title
+        - detail
+        - instance
+      properties:
+        type:
+          type: string
+          description: Link to error / remediation options
+          example: https://developer.nexmo.com/api-errors/whatsapp-provisioning#VerificationFailed
+        title:
+          type: string
+          description: Generic error message
+          example: Verification Failed
+        detail:
+          type: string
+          description: Additional information about the error
+          example: Deployment could not be created because the verification failed.
         instance:
           type: string
           description: Internal Trace ID
@@ -548,7 +570,6 @@ components:
           type: string
           description: Internal Trace ID
           example: bf0ca0bf927b3b52e3cb03217e1a1ddf
-        
     ResendOtpResponse:
       type: object
       properties:
@@ -589,7 +610,7 @@ components:
             title:
               type: string
               description: status code reflecting the deployment's status
-              example: error
+              example: ERROR
               enum: 
                 - INITIALIZING
                 - CREATING_CLUSTER
@@ -617,16 +638,17 @@ components:
         country_code:
           description: country code of the number being provisioned
           type: string
-          example: 44
+          example: "44"
         number:
           description: the WhatsApp number being provisioned
           type: string
-          example: 7877001122
+          example: "7877001122"
         vname_certificate:
           $ref: '#/components/schemas/vname_certificate'
         otp_method:
           type: string
           description: The method for delivering the OTP
+          example: sms
           enum:
             - sms
             - voice
@@ -659,10 +681,10 @@ components:
       properties:
          otp_method:
           type: string
+          example: sms
           enum:
             - sms
-            - voice   
-    
+            - voice
 security:
   - bearerAuth: []
 tags:
@@ -677,10 +699,14 @@ x-errors:
     description: Parameters were valid JSON but something was missing or wrongly formatted
     resolution: Fix parameters to the API and try again
     link:
-      url: /api/whatsapp-provisioning#unprocessable
+      url: /api-errors/whatsapp-provisioning#unprocessable
   throttled: 
     description: Too many requests have been made on this endpoint
     resolution: Wait a moment and try again
     link:
-      url: /api/whatsapp-provisioning#throttled
-    
+      url: /api-errors/whatsapp-provisioning#throttled
+  VerificationFailed:
+    description: Verification step failed. Either because the the provided code was incorrect or because too many attempts have been made
+    resolution: Try again with the correct OTP, or call resend-otp
+    link:
+      url: /api-errors/whatsapp-provisioning#VerificationFailed
