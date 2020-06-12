@@ -74,51 +74,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorNotFound"
-    patch:
-      description: Allows you to resubmit your vname certificate or pin prior to calling the resent OTP request
-      tags: 
-        - Deployment      
-      operationId: updateDeployment
-      summary: Fix Deployment
-      parameters:
-        - $ref: "#/components/parameters/deployment_id"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: 
-              $ref: '#/components/schemas/UpdateDeployment'
-      responses:
-        '202':
-          description: Modifications have been Accepted
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DeploymentResponse"
-        '400':
-          description: Bad Request.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorInvalidJson"
-        '401':
-          description: Invalid Credentials        
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorUnauthorized"
-        '404':
-          description: Deployment Not Found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorNotFound"
-        '422':
-          description: Invalid Parameters
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorUnprocessable"
     delete:
       description: Delete a WhatsApp deployment
       tags:
@@ -267,67 +222,14 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                about:
-                  type: string
-                  example: about your business
-                  description: Text to display in your profile's About section - max 139 characters.
-                  minLength: 1
-                  maxLength: 139
-                address:
-                  type: string
-                  description: Your business address - max 256 characters.
-                  example: 15 Yemen Road, Yemen
-                  minLength: 1
-                  maxLength: 256
-                description:
-                  type: string
-                  description: a description of your business - max 256 characters
-                  example: your business description
-                  minLength: 1
-                  maxLength: 256
-                email:
-                  type: string
-                  description: Your business' email - max 128 characters
-                  example: you@example.com
-                  minLength: 1
-                  maxLength: 128
-                vertical:
-                  description: Your business' industry
-                  type: string
-                  example: Food and Grocery
-                  enum:
-                    - Automotive
-                    - Beauty, Spa and Salon
-                    - Clothing and Apparel
-                    - Education
-                    - Entertainment
-                    - Event Planning and Service
-                    - Finance and Banking
-                    - Food and Grocery
-                    - Public Service
-                    - Hotel and Lodging
-                    - Medical and Health
-                    - Non-profit
-                    - Professional Services
-                    - Shopping and Retail
-                    - Travel and Transportation
-                    - Restaurant
-                    - Other
-                websites:
-                  description: "Your business' websites maximum of 2 websites, max website length: 256"
-                  x-nexmo-developer-collection-description-shown: true
-                  type: array
-                  example:
-                      - https://example.com
-                  items:
-                    type: string
-                  minItems: 1
-                  maxItems: 2
+              $ref: "#/components/schemas/profile"              
       responses:
         '200':
-          description: OK.
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/profile"
           
         '400':
           description: Bad Request.
@@ -353,7 +255,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorUnprocessable"
-
   /deployments/{deployment_id}/profile/photo:
     put:
       description: Replaces profile photo with photo at the given URL for the deployment.
@@ -380,6 +281,15 @@ paths:
       responses:
         '200':
           description: OK.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  source_url:
+                    description: Url where the profile photo was pulled from
+                    type: string
+                    example: https://www.example.com/img.png
         '400':
           description: Bad Request.
           content:
@@ -404,9 +314,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorUnprocessable"
-
 components:
-
   securitySchemes:
     bearerAuth:
       type: http
@@ -473,6 +381,20 @@ components:
           type: string
           description: Internal Trace ID
           example: bf0ca0bf927b3b52e3cb03217e1a1ddf
+        invalid_parameters:
+          type: array
+          description: parameters that were invalid
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: The name of the invalid parameter
+                example: code
+              reason:
+                type: string
+                description: The reason the parameter is invalid
+                example: Invalid code provided.
     ErrorUnprocessable:
       type: object
       required:
@@ -570,6 +492,65 @@ components:
           type: string
           description: Internal Trace ID
           example: bf0ca0bf927b3b52e3cb03217e1a1ddf
+    profile:
+      type: object
+      properties:
+        about:
+          type: string
+          example: about your business
+          description: Text to display in your profile's About section - max 139 characters.
+          minLength: 1
+          maxLength: 139
+        address:
+          type: string
+          description: Your business address - max 256 characters.
+          example: 15 Yemen Road, Yemen
+          minLength: 1
+          maxLength: 256
+        description:
+          type: string
+          description: a description of your business - max 256 characters
+          example: your business description
+          minLength: 1
+          maxLength: 256
+        email:
+          type: string
+          description: Your business' email - max 128 characters
+          example: you@example.com
+          minLength: 1
+          maxLength: 128
+        vertical:
+          description: Your business' industry
+          type: string
+          example: food_and_grocery
+          enum:
+            - automotive
+            - beauty_spa_and_salon
+            - clothing_and_apparel
+            - education
+            - entertainment
+            - event_planning_and_service
+            - finance_and_banking
+            - food_and_grocery
+            - public_service
+            - hotel_and_lodging
+            - medical_and_health
+            - non_profit
+            - professional_services
+            - shopping_and_retail
+            - travel_and_transportation
+            - restaurant
+            - other
+        websites:
+          description: "Your business' websites maximum of 2 websites, max website length: 256"
+          x-nexmo-developer-collection-description-shown: true
+          type: array
+          example:
+              - https://example.com
+          items:
+            type: string
+          minItems: 1
+          maxItems: 2      
     ResendOtpResponse:
       type: object
       properties:
@@ -657,9 +638,7 @@ components:
           description: WABA ID of the WhatsApp Number
           example: '345676589250625'
         pin:
-          type: string
-          description: Required if you previously set a pin when creating a WhatsApp number.
-          example: '123456'
+          $ref: "#/components/schemas/pin"
     pin:
       type: string
       description: Required if you previously set a pin when creating a WhatsApp number.
@@ -669,13 +648,7 @@ components:
         Cert retrieved from from your WhatsApp Business dashboard
         > **Note** this value is refreshed whenever you click the view button
       type: string
-      example: CnQKMAj669nb79e
-    UpdateDeployment:
-      properties:
-        vname_certificate:
-          $ref: '#/components/schemas/vname_certificate'
-        pin:
-          $ref: "#/components/schemas/pin"
+      example: CnQKMAj669nb79e    
     Resend-OTP:
       description: The method for delivering the OTP
       properties:
