@@ -254,7 +254,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorUnprocessable"
+                $ref: "#/components/schemas/InvalidParametersUpdateProfile"
+
   /deployments/{deployment_id}/profile/photo:
     put:
       description: Replaces profile photo with photo at the given URL for the deployment.
@@ -419,6 +420,57 @@ components:
           type: string
           description: Internal Trace ID
           example: bf0ca0bf927b3b52e3cb03217e1a1ddf
+        invalid_parameters:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description : Name of invalid parameter
+                example: url
+              reason:
+                type: string 
+                description: Reason of failure
+                example: Url was not in a valid format
+    InvalidParametersUpdateProfile:
+      type: object
+      required:
+        - type
+        - title
+        - detail
+        - instance
+      properties:
+        type:
+          type: string
+          description: Link to error / remediation options
+          example: https://developer.nexmo.com/api-errors/whatsapp-provisioning#unprocessable
+        title:
+          type: string
+          description: Generic error message
+          example: Unprocessable Entity
+        detail:
+          type: string
+          description: Additional information about the error
+          example: Request was missing a parameter and could not be processed
+        instance:
+          type: string
+          description: Internal Trace ID
+          example: bf0ca0bf927b3b52e3cb03217e1a1ddf
+        invalid_parameters:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description : Name of invalid parameter
+                example: email
+              reason:
+                type: string 
+                description: Reason of failure
+                example: Email format invalid
+
     ErrorNotFound:
       type: object
       required:
@@ -438,7 +490,7 @@ components:
         detail:
           type: string
           description: Additional information about the error
-          example: Requested resource wasn't found
+          example: Deployment does not exist or you do not have access.
         instance:
           type: string
           description: Internal Trace ID
@@ -447,7 +499,7 @@ components:
       type: object
       required:
         - type
-        - error
+        - title
         - detail
         - instance
       properties:
@@ -455,14 +507,14 @@ components:
           type: string
           description: Machine readable error type
           example: https://developer.nexmo.com/api-errors#unauthorized
-        error:
+        title:
           type: string
           description: Error title
-          example: Unauthorized
+          example: You did not provide correct credentials.
         detail:
           type: string
           description: Unauthorized
-          example: Unauthorized
+          example: Check that you're using the correct credentials, and that your account has this feature enabled
         instance:
           type: string
           description: Internal Trace ID
@@ -520,27 +572,10 @@ components:
           minLength: 1
           maxLength: 128
         vertical:
-          description: Your business' industry
+          description: | 
+            Your business' industry - must be recognized by WhatsApp. Potential values include: `Automotive`, `Beauty, Spa and Salon`, `Clothing and Apparel`, `Education`, `Entertainment`, `Event Planning and Service`, `Finance and Banking`, `Food and Grocery`, `Public Service`, `Hotel and Lodging`, `Medical and Health`, `Non-profit`, `Professional Services`, `Shopping and Retail`, `Travel and Transportation`, `Restaurant`, `Other`
           type: string
-          example: food_and_grocery
-          enum:
-            - automotive
-            - beauty_spa_and_salon
-            - clothing_and_apparel
-            - education
-            - entertainment
-            - event_planning_and_service
-            - finance_and_banking
-            - food_and_grocery
-            - public_service
-            - hotel_and_lodging
-            - medical_and_health
-            - non_profit
-            - professional_services
-            - shopping_and_retail
-            - travel_and_transportation
-            - restaurant
-            - other
+          example: Food and Grocery
         websites:
           description: "Your business' websites maximum of 2 websites, max website length: 256"
           x-nexmo-developer-collection-description-shown: true
@@ -583,7 +618,7 @@ components:
         api_key:
           type: string
           description: the api key the deployment is tied to
-          example: aaa111
+          example: abcd1234
         current_state:
           type: object
           description: The current status of the deployment
@@ -638,11 +673,9 @@ components:
           description: WABA ID of the WhatsApp Number
           example: '345676589250625'
         pin:
-          $ref: "#/components/schemas/pin"
-    pin:
-      type: string
-      description: Required if you previously set a pin when creating a WhatsApp number.
-      example: '123456'
+          type: string
+          description: Required if you previously set a pin when creating a WhatsApp number.
+          example: '123456'    
     vname_certificate:
       description: |
         Cert retrieved from from your WhatsApp Business dashboard
