@@ -556,7 +556,7 @@ components:
         address:
           type: string
           description: Your business address - max 256 characters.
-          example: 15 Yemen Road, Yemen
+          example: 123 main street
           minLength: 1
           maxLength: 256
         description:
@@ -573,9 +573,27 @@ components:
           maxLength: 128
         vertical:
           description: | 
-            Your business' industry - must be recognized by WhatsApp. Potential values include: `Automotive`, `Beauty, Spa and Salon`, `Clothing and Apparel`, `Education`, `Entertainment`, `Event Planning and Service`, `Finance and Banking`, `Food and Grocery`, `Public Service`, `Hotel and Lodging`, `Medical and Health`, `Non-profit`, `Professional Services`, `Shopping and Retail`, `Travel and Transportation`, `Restaurant`, `Other`
+            Your business' industry - must be recognized by WhatsApp.
           type: string
           example: Food and Grocery
+          enum:
+            - Automotive
+            - Beauty, Spa and Salon
+            - Clothing and Apparel
+            - Education
+            - Entertainment
+            - Event Planning and Service
+            - Finance and Banking
+            - Food and Grocery
+            - Public Service
+            - Hotel and Lodging
+            - Medical and Health
+            - Non-profit
+            - Professional Services
+            - Shopping and Retail
+            - Travel and Transportation
+            - Restaurant
+            - Other
         websites:
           description: "Your business' websites maximum of 2 websites, max website length: 256"
           x-nexmo-developer-collection-description-shown: true
@@ -626,7 +644,7 @@ components:
             title:
               type: string
               description: status code reflecting the deployment's status
-              example: ERROR
+              example: INITIALIZING
               enum: 
                 - INITIALIZING
                 - CREATING_CLUSTER
