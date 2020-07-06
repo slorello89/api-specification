@@ -273,9 +273,9 @@ paths:
             schema:
               type: object
               required: 
-                - url
+                - source_url
               properties:
-                url:
+                source_url:
                   description: URL pointing to a .png or .jpg. Image must be minimum 192px. max 640px x 640px. max 5MB.
                   type: string
                   example: https://www.example.com/img.png
@@ -660,7 +660,7 @@ components:
             detail:
               type: string
               description: Description of the deployment status e.g. `Invalid vname certificate`
-              example: Invalid vname certificate
+              example: Initializing deployment
     Deployment:
       required:
         - country_code
