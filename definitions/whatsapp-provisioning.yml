@@ -273,9 +273,9 @@ paths:
             schema:
               type: object
               required: 
-                - source_url
+                - image_url
               properties:
-                source_url:
+                image_url:
                   description: URL pointing to a .png or .jpg. Image must be minimum 192px. max 640px x 640px. max 5MB.
                   type: string
                   example: https://www.example.com/img.png
@@ -287,7 +287,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  source_url:
+                  image_url:
                     description: Url where the profile photo was pulled from
                     type: string
                     example: https://www.example.com/img.png
@@ -482,7 +482,7 @@ components:
         type:
           type: string
           description: Link to error / remediation options
-          example: https://developer.nexmo.com/api-errors#not-found
+          example: https://developer.nexmo.com/api-errors/whatsapp-provisioning#not-found
         title:
           type: string
           description: Generic error message
@@ -506,7 +506,7 @@ components:
         type:
           type: string
           description: Machine readable error type
-          example: https://developer.nexmo.com/api-errors#unauthorized
+          example: https://developer.nexmo.com/api-errors/whatsapp-provisioning#unauthorized
         title:
           type: string
           description: Error title
@@ -531,7 +531,7 @@ components:
         type:
           type: string
           description: Link to error / remediation options
-          example: https://developer.nexmo.com/api-errors#invalid-json
+          example: https://developer.nexmo.com/api-errors/whatsapp-provisioning#invalid-json
         title:
           type: string
           description: Generic error message
