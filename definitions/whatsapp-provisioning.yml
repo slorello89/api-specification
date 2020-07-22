@@ -208,6 +208,33 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorThrottled"
   /deployments/{deployment_id}/profile:
+    get:
+      description: Get's business profile information
+      tags:
+        - Profile
+      summary: Get Profile Info
+      operationId: getProfileInfo
+      parameters:
+        - $ref: "#/components/parameters/deployment_id"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/profile"
+        '401':
+          description: Invalid Credentials        
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorUnauthorized"
+        '404':
+          description: Deployment Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorNotFound"
     patch:
       description: Updates profile information for deployment.
       tags:
@@ -257,6 +284,38 @@ paths:
                 $ref: "#/components/schemas/InvalidParametersUpdateProfile"
 
   /deployments/{deployment_id}/profile/photo:
+    get:
+      description: Get's business profile photo
+      tags:
+        - Profile
+      summary: Get Profile Photo
+      operationId: getProfilePhoto
+      parameters:
+        - $ref: "#/components/parameters/deployment_id"
+      responses:
+        '200':
+          description: OK.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  image_url:
+                    description: Url where the profile photo was pulled from
+                    type: string
+                    example: https://www.example.com/img.png
+        '401':
+          description: Invalid Credentials        
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorUnauthorized"
+        '404':
+          description: Deployment Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorNotFound"
     put:
       description: Replaces profile photo with photo at the given URL for the deployment.
       tags:
