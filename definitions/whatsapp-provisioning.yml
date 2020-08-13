@@ -432,7 +432,7 @@ components:
         title:
           type: string
           description: Generic error message
-          example: Verification Failed
+          example: verification-failed
         detail:
           type: string
           description: Additional information about the error
@@ -470,11 +470,11 @@ components:
         title:
           type: string
           description: Generic error message
-          example: Unprocessable Entity
+          example: unprocessable-entity
         detail:
           type: string
           description: Additional information about the error
-          example: Request was missing a parameter and could not be processed
+          example: Request was missing a waba_id and could not be processed
         instance:
           type: string
           description: Internal Trace ID
@@ -503,15 +503,15 @@ components:
         type:
           type: string
           description: Link to error / remediation options
-          example: https://developer.nexmo.com/api-errors/whatsapp-provisioning#unprocessable
+          example: https://developer.nexmo.com/api-errors/whatsapp-provisioning#unprocessableProfileUpdate
         title:
           type: string
           description: Generic error message
-          example: Unprocessable Entity
+          example: unprocessable-entity
         detail:
           type: string
           description: Additional information about the error
-          example: Request was missing a parameter and could not be processed
+          example: Description was longer than 256 characters and could not be processed.
         instance:
           type: string
           description: Internal Trace ID
@@ -545,7 +545,7 @@ components:
         title:
           type: string
           description: Generic error message
-          example: Not Found
+          example: not-found
         detail:
           type: string
           description: Additional information about the error
@@ -565,7 +565,7 @@ components:
         type:
           type: string
           description: Machine readable error type
-          example: https://developer.nexmo.com/api-errors/whatsapp-provisioning#unauthorized
+          example: https://developer.nexmo.com/api-errors#unauthorized
         title:
           type: string
           description: Error title
@@ -594,7 +594,7 @@ components:
         title:
           type: string
           description: Generic error message
-          example: Invalid JSON
+          example: invalid-json
         detail:
           type: string
           description: Additional information about the error
@@ -672,7 +672,7 @@ components:
         vname:
           type: string
           example: your vname
-        otp_method:
+        method:
           type: string
           example: sms
           description: The method the OTP resend will use.   
@@ -725,7 +725,7 @@ components:
         - country_code
         - number
         - vname_certificate 
-        - otp_method
+        - method
         - waba_id
       properties:
         country_code:
@@ -738,7 +738,7 @@ components:
           example: "7877001122"
         vname_certificate:
           $ref: '#/components/schemas/vname_certificate'
-        otp_method:
+        method:
           type: string
           description: The method for delivering the OTP
           example: sms
@@ -762,7 +762,7 @@ components:
     Resend-OTP:
       description: The method for delivering the OTP
       properties:
-         otp_method:
+         method:
           type: string
           example: sms
           enum:
@@ -783,6 +783,11 @@ x-errors:
     resolution: Fix parameters to the API and try again
     link:
       url: /api-errors/whatsapp-provisioning#unprocessable
+  unprocessableProfileUpdate:
+    description: Parameters were valid JSON but something was missing or wrongly formatted
+    resolution: Fix parameters to the API and try again
+    link:
+      url: /api-errors/whatsapp-provisioning#unprocessableProfileUpdate
   throttled: 
     description: Too many requests have been made on this endpoint
     resolution: Wait a moment and try again
