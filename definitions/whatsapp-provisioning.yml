@@ -428,11 +428,11 @@ components:
         type:
           type: string
           description: Link to error / remediation options
-          example: https://developer.nexmo.com/api-errors/whatsapp-provisioning#VerificationFailed
+          example: https://developer.nexmo.com/api-errors/whatsapp-provisioning#verification-failed
         title:
           type: string
           description: Generic error message
-          example: verification-failed
+          example: Verification Failed
         detail:
           type: string
           description: Additional information about the error
@@ -470,7 +470,7 @@ components:
         title:
           type: string
           description: Generic error message
-          example: unprocessable-entity
+          example: Unprocessable Entity
         detail:
           type: string
           description: Additional information about the error
@@ -503,11 +503,11 @@ components:
         type:
           type: string
           description: Link to error / remediation options
-          example: https://developer.nexmo.com/api-errors/whatsapp-provisioning#unprocessableProfileUpdate
+          example: https://developer.nexmo.com/api-errors/whatsapp-provisioning#unprocessable-profile-update
         title:
           type: string
           description: Generic error message
-          example: unprocessable-entity
+          example: Unprocessable Entity
         detail:
           type: string
           description: Additional information about the error
@@ -545,7 +545,7 @@ components:
         title:
           type: string
           description: Generic error message
-          example: not-found
+          example: Not Found
         detail:
           type: string
           description: Additional information about the error
@@ -594,7 +594,7 @@ components:
         title:
           type: string
           description: Generic error message
-          example: invalid-json
+          example: Invalid JSON
         detail:
           type: string
           description: Additional information about the error
