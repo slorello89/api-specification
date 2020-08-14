@@ -136,7 +136,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorNotFound"        
+                $ref: "#/components/schemas/ErrorNotFound"
+        '409':
+          description: Could not resend OTP
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorConflictResendOtp"        
         '429':
           description: Throttled.
           content:
@@ -413,6 +419,30 @@ components:
           type: string
           description: Additional information about the error
           example: Exceeded rate limit for this API, please wait and try again
+        instance:
+          type: string
+          description: Internal Trace ID
+          example: bf0ca0bf927b3b52e3cb03217e1a1ddf
+    ErrorConflictResendOtp:
+      type: object
+      required:
+        - type
+        - title
+        - detail
+        - instance
+      properties:
+        type:
+          type: string
+          description: Link to error / remediation options
+          example: https://developer.nexmo.com/api-errors/whatsapp-provisioning#conflict-resend-otp
+        title:
+          type: string
+          description: Generic error message
+          example: Deployment Completed, Resend Failed
+        detail:
+          type: string
+          description: Additional information about the error
+          example: OTP could not be resent because the deployment has already been finalized.
         instance:
           type: string
           description: Internal Trace ID
@@ -798,3 +828,8 @@ x-errors:
     resolution: Try again with the correct OTP, or call resend-otp
     link:
       url: /api-errors/whatsapp-provisioning#VerificationFailed
+  OtpResendConflict:
+    description: Could not resend OTP because the deployment has already been finalized
+    resolution: No action required as the deployment has already been finalized.
+    link:
+      url: /api-errors/whatsapp-provisioning#conflict-resend-otp
