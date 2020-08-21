@@ -442,7 +442,7 @@ components:
         detail:
           type: string
           description: Additional information about the error
-          example: OTP could not be resent because the deployment has already been finalized.
+          example: OTP not required.
         instance:
           type: string
           description: Internal Trace ID
@@ -829,7 +829,7 @@ x-errors:
     link:
       url: /api-errors/whatsapp-provisioning#VerificationFailed
   OtpResendConflict:
-    description: Could not resend OTP because the deployment has already been finalized
-    resolution: No action required as the deployment has already been finalized.
+    description: Could not resend OTP because the current state of the deployment did not allow it
+    resolution: The deployment either has already been finalized or is in an error state and must be deleted and remade.
     link:
       url: /api-errors/whatsapp-provisioning#conflict-resend-otp
