@@ -714,6 +714,9 @@ components:
           type: string
           description: The Deployment id
           example: aaaaaaaa-bbbb-cccc-dddd-0123456789ab
+        waba_id:
+          type: string
+          description: The WABA ID of the WhatsApp number
         country_code:
           type: string
           description: the country code of the deployment e.g. `44`
