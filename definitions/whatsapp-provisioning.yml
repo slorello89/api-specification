@@ -3,7 +3,7 @@ info:
   version: 0.1.0
   title: WhatsApp Provisioning  API
   description: | 
-    The WhatsApp Manager API enables customers to deploy a WhatsApp cluster, perform the One Time Password(OTP) verification, and update profile information 
+    The WhatsApp Manager API enables customers to deploy a WhatsApp cluster, perform One Time Password (OTP) verification, and update profile information 
   contact:
     name: Nexmo DevRel
     email: devrel@nexmo.com
@@ -17,7 +17,7 @@ paths:
       tags: 
         - Deployment
       summary: Provision WhatsApp deployment
-      description: This API request provisions a WhatsApp cluster. The WhatsApp cluster once provisioned will go through the stages `INITIALIZING`, `CREATING_CLUSTER`, `CLUSTER_CREATED`. After the `CLUSTER_CREATED` stage is reached an OTP call or SMS is sent to the number specified causing the deployment status to transition to `CODE_SENT`. After receiving the OTP, use the verify api call to finish the process.
+      description: This API request provisions a WhatsApp cluster. Once provisioned, the cluster progresses through the following deployment stages: `INITIALIZING`, `CREATING_CLUSTER` and `CLUSTER_CREATED`. When the `CLUSTER_CREATED` stage is reached an OTP voice call or SMS is sent to the specified number and the deployment status becomes `CODE_SENT`. When the OTP is received, call the Verify API to complete the process.
       operationId: createDeployment
       requestBody:
         required: true
@@ -719,15 +719,15 @@ components:
           description: The WABA ID of the WhatsApp number
         country_code:
           type: string
-          description: the country code of the deployment e.g. `44`
+          description: The international dialing code of the deployment e.g. `44` for the United Kingdom.
           example: '44'
         number:
           type: string
-          description: the Number for the deployment e.g. `7877001122`
+          description: The phone number of the deployment (minus the international dialing code) e.g. `7877001122`
           example: '7877001122'
         api_key:
           type: string
-          description: the api key the deployment is tied to
+          description: The API key associated with the deployment.
           example: abcd1234
         current_state:
           type: object
@@ -735,7 +735,7 @@ components:
           properties:
             title:
               type: string
-              description: status code reflecting the deployment's status
+              description: The current status of the deployment.
               example: INITIALIZING
               enum: 
                 - INITIALIZING
@@ -762,11 +762,11 @@ components:
         - waba_id
       properties:
         country_code:
-          description: country code of the number being provisioned
+          description: The international dialing code of the number being provisioned
           type: string
           example: "44"
         number:
-          description: the WhatsApp number being provisioned
+          description: The WhatsApp number being provisioned.
           type: string
           example: "7877001122"
         vname_certificate:
@@ -784,12 +784,12 @@ components:
           example: '345676589250625'
         pin:
           type: string
-          description: Required if you previously set a pin when creating a WhatsApp number.
+          description: Required if you previously set a PIN when creating a WhatsApp number.
           example: '123456'    
     vname_certificate:
       description: |
-        Cert retrieved from from your WhatsApp Business dashboard
-        > **Note** this value is refreshed whenever you click the view button
+        The certificate, which you can retrieve from your WhatsApp Business dashboard.
+        > **Note** this value is refreshed whenever you click the View button.
       type: string
       example: CnQKMAj669nb79e    
     Resend-OTP:
@@ -833,6 +833,6 @@ x-errors:
       url: /api-errors/whatsapp-provisioning#VerificationFailed
   OtpResendConflict:
     description: Could not resend OTP because the current state of the deployment did not allow it
-    resolution: The deployment either has already been finalized or is in an error state and must be deleted and remade.
+    resolution: The deployment has either already finished, or is in an error state (in which case you should delete it and run it again).
     link:
       url: /api-errors/whatsapp-provisioning#conflict-resend-otp
