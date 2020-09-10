@@ -17,7 +17,7 @@ paths:
       tags: 
         - Deployment
       summary: Provision WhatsApp deployment
-      description: This API request provisions a WhatsApp cluster. Once provisioned, the cluster progresses through the following deployment stages: `INITIALIZING`, `CREATING_CLUSTER` and `CLUSTER_CREATED`. When the `CLUSTER_CREATED` stage is reached an OTP voice call or SMS is sent to the specified number and the deployment status becomes `CODE_SENT`. When the OTP is received, call the Verify API to complete the process.
+      description: "This API request provisions a WhatsApp cluster. Once provisioned, the cluster progresses through the following deployment stages: `INITIALIZING`, `CREATING_CLUSTER` and `CLUSTER_CREATED`. When the `CLUSTER_CREATED` stage is reached an OTP voice call or SMS is sent to the specified number and the deployment status becomes `CODE_SENT`. When the OTP is received, call the Verify API to complete the process."
       operationId: createDeployment
       requestBody:
         required: true
@@ -716,7 +716,7 @@ components:
           example: aaaaaaaa-bbbb-cccc-dddd-0123456789ab
         waba_id:
           type: string
-          description: The WABA ID of the WhatsApp number
+          description: The WhatsApp Business Account (WABA) ID of the WhatsApp number
         country_code:
           type: string
           description: The international dialing code of the deployment e.g. `44` for the United Kingdom.
@@ -813,12 +813,12 @@ tags:
 x-errors:
   unprocessable:
     description: Parameters were valid JSON but something was missing or wrongly formatted
-    resolution: Fix parameters to the API and try again
+    resolution: Fix the incorrect request parameters and try again
     link:
       url: /api-errors/whatsapp-provisioning#unprocessable
   unprocessableProfileUpdate:
     description: Parameters were valid JSON but something was missing or wrongly formatted
-    resolution: Fix parameters to the API and try again
+    resolution: Fix the incorrect request parameters and try again
     link:
       url: /api-errors/whatsapp-provisioning#unprocessableProfileUpdate
   throttled: 
