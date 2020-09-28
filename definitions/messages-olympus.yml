@@ -56,22 +56,23 @@ paths:
               responses:
                 "200":
                   description: Your server returns this code if it accepts the callback.
-        inbound-message:
-          "{$request.body#/callback}":
-            post:
-              summary: Inbound Message
-              operationId: inbound-message
-              x-example-path: "/webhooks/inbound-message"
-              description: An inbound message from a customer to you.
-              requestBody:
-                required: true
-                content:
-                  application/json:
-                    schema:
-                      $ref: "#/components/schemas/inbound-message"
-              responses:
-                "200":
-                  description: Your server returns this code if it accepts the callback.
+x-webhooks:
+  inbound-message:
+    "{$request.body#/callback}":
+      post:
+        summary: Inbound Message
+        operationId: inbound-message
+        x-example-path: "/webhooks/inbound-message"
+        description: An inbound message from a customer to you.
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/inbound-message"
+        responses:
+          "200":
+            description: Your server returns this code if it accepts the callback.
 
 components:  
   securitySchemes:
@@ -103,7 +104,7 @@ components:
         - title: SMS
           x-tab-id: SMS
           allOf:
-            - $ref: "#/components/schemas/SmsCommon"
+            - $ref: "#/components/schemas/inbound-common"
             - $ref: "#/components/schemas/SmsInbound"
         - title: WhatsApp
           x-tab-id: WhatsApp
@@ -1276,6 +1277,19 @@ components:
                         type: string
                         example: "HELLO"
                         description: The first word of the message sent to uppercase.
+        usage:
+          type: object
+          properties:
+            currency:
+              type: string
+              example: EUR
+              description: The charge currency in ISO 4217 format.
+              enum:
+                - EUR
+            price:
+              type: string
+              example: "0.0333"
+              description: The charge amount as a stringified number.
     SmsCommon:
       type: object
       required:
