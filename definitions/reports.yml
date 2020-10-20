@@ -840,8 +840,9 @@ components:
       example: "SMS_BB"
     
     product_sms:
-      $ref: "#/components/schemas/product"
-      $ref: "#/components/schemas/product_sms_example"
+      allOf:
+        - $ref: "#/components/schemas/product"
+        - $ref: "#/components/schemas/product_sms_example"
     
     product_voice:
       type: string
