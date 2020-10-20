@@ -822,7 +822,7 @@ components:
           $ref: "#/components/schemas/account_id"
  
     # request fields
-product:
+    product:
       type: string
       description: Which product you wish to generate a report for.
       enum:
