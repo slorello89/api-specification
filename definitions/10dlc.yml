@@ -34,11 +34,7 @@ paths:
       operationId: createBrand
       summary: Create a new brand for your account
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Brand'
+        $ref: '#/components/requestBodies/CreateBrand'
       responses:
         '201':
           $ref: '#/components/responses/SingleBrandResponse'
@@ -733,46 +729,111 @@ components:
                             type: string
                             example: "/10dlc/brands/5782db87-a867-4ccd-a0b5-1b7203cc438c/campaigns/57b3a89e-c9fa-4860-aec2-ad7f51539dab"
 
+  requestBodies:
+    CreateBrand:
+      required: true
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - title: Individual Person
+                x-tab-id: IndividualPerson
+                allOf:
+                  - $ref: '#/components/schemas/CreateIndividualBrand'
+              - title: Non-Profit
+                x-tab-id: NonProfit
+                allOf:
+                  - $ref: '#/components/schemas/CreateNonProfitBrand'
+              - title: Private Company
+                x-tab-id: PrivateCompany
+                allOf:
+                  - $ref: '#/components/schemas/CreatePrivateCompanyBrand'
+              - title: Public Company
+                x-tab-id: PublicCompany
+                allOf:
+                  - $ref: '#/components/schemas/CreatePublicCompanyBrand'
+
   schemas:
     Brand:
       type: object
       properties:
         entity_type:
           type: string
+          enum:
+            - INDIVIDUAL
+            - PRIVATE_PROFIT
+            - PUBLIC_PROFIC
+            - NON_PROFIT
+          example:
+            $ref: '#/components/examples/BrandVonage/value/entity_type'
         display_name:
           type: string
+          example:
+            $ref: '#/components/examples/BrandVonage/value/display_name'
         company_name:
           type: string
+          example:
+            $ref: '#/components/examples/BrandVonage/value/company_name'
         ein:
           type: string
+          example:
+            $ref: '#/components/examples/BrandVonage/value/ein'
         alt_business_id_type:
           type: string
+          example:
+            $ref: '#/components/examples/BrandVonage/value/alt_business_id_type'
         alt_business_id:
           type: string
+          example:
+            $ref: '#/components/examples/BrandVonage/value/alt_business_id'
         phone:
           type: string
+          example:
+            $ref: '#/components/examples/BrandVonage/value/phone'
         street:
           type: string
+          example:
+            $ref: '#/components/examples/BrandVonage/value/street'
         city:
           type: string
+          example:
+            $ref: '#/components/examples/BrandVonage/value/city'
         state:
           type: string
+          example:
+            $ref: '#/components/examples/BrandVonage/value/state'
         postal_code:
           type: string
+          example:
+            $ref: '#/components/examples/BrandVonage/value/postal_code'
         country:
           type: string
+          example:
+            $ref: '#/components/examples/BrandVonage/value/country'
         email:
           type: string
+          example:
+            $ref: '#/components/examples/BrandVonage/value/email'
         stock_symbol:
           type: string
+          example:
+            $ref: '#/components/examples/BrandVonage/value/stock_symbol'
         stock_exchange:
           type: string
+          example:
+            $ref: '#/components/examples/BrandVonage/value/stock_exchange'
         website:
           type: string
+          example:
+            $ref: '#/components/examples/BrandVonage/value/website'
         brand_relationship:
           type: string
+          example:
+            $ref: '#/components/examples/BrandVonage/value/brand_relationship'
         vertical:
           type: string
+          example:
+            $ref: '#/components/examples/BrandVonage/value/vertical'
 
     BrandResponse:
       allOf:
@@ -887,6 +948,64 @@ components:
                   properties:
                     href:
                       type: string
+
+    CreateIndividualBrand:
+      type: object
+      properties:
+        $ref: '#/components/schemas/Brand/properties'
+      required:
+        - entity_type
+        - display_name
+        - phone
+        - country
+        - email
+        - brand_relationship
+
+    CreateNonProfitBrand:
+      type: object
+      properties:
+        $ref: '#/components/schemas/Brand/properties'
+      required:
+        - entity_type
+        - display_name
+        - company_name
+        - ein
+        - phone
+        - country
+        - email
+        - brand_relationship
+        - website
+
+    CreatePrivateCompanyBrand:
+      type: object
+      properties:
+        $ref: '#/components/schemas/Brand/properties'
+      required:
+        - entity_type
+        - display_name
+        - company_name
+        - ein
+        - phone
+        - country
+        - email
+        - brand_relationship
+
+    CreatePublicCompanyBrand:
+      type: object
+      properties:
+        $ref: '#/components/schemas/Brand/properties'
+      required:
+        - entity_type
+        - display_name
+        - company_name
+        - ein
+        - phone
+        - country
+        - email
+        - brand_relationship
+        - stock_symbol
+        - stock_exchange
+        - website
 
     ErrorCouldNotRemoveNumber:
       allOf:
