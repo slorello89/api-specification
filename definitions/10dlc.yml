@@ -1,4 +1,4 @@
-openapi: 3.0.0
+openapi: 3.0.3
 
 info:
   version: 1.0.0
@@ -103,11 +103,22 @@ paths:
         '404':
           $ref: "common/common_errors.yml#/components/responses/NotFoundError"
 
-  # /v1/10DLC/brands/{brand_id}/use_cases:
-  #   get:
-  #     description: Retrieve a list of use cases that are valid for a brand
-  #   post:
-  #     description: Qualify a new use case for a brand
+  /v1/10DLC/brands/{brand_id}/use_cases:
+    parameters:
+      - $ref: "#/components/parameters/BrandId"
+    get:
+      summary: Retrieve a list of use cases that are registered for a brand
+      description: List use cases for brand
+      operationId: listBrandUseCases
+      responses:
+        '200':
+          $ref: '#/components/responses/MultiUseCasesResponse'
+        '401':
+          $ref: "common/common_errors.yml#/components/responses/BadCredentialsError"
+        '404':
+          $ref: "common/common_errors.yml#/components/responses/NotFoundError"
+    # post:
+    #   description: Qualify a new use case for a brand
 
   # /v1/10DLC/brands/{brand_id}/use_cases/{use_case_id}:
   #   get:
@@ -258,25 +269,29 @@ paths:
                 - numbers
       responses:
         '201':
-          type: object
-          properties:
-            numbers:
-              type: array
-              items:
-                $ref: '#/components/schemas/Number'
-            _links:
-              type: object
-              properties:
-                self:
-                  type: object
-                  properties:
-                    href:
-                      type: string
-                campaign:
-                  type: object
-                  properties:
-                    href:
-                      type: string
+          description: Numbers were successfully added to campaign
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  numbers:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Number'
+                  _links:
+                    type: object
+                    properties:
+                      self:
+                        type: object
+                        properties:
+                          href:
+                            type: string
+                      campaign:
+                        type: object
+                        properties:
+                          href:
+                            type: string
         '207':
           $ref: '#/components/responses/ErrorCouldNotRemoveNumberResponse'
         '400':
@@ -292,7 +307,13 @@ paths:
         '404':
           $ref: "common/common_errors.yml#/components/responses/NotFoundError"
         '413':
-          - $ref: '#/components/responses/ErrorTooManyNumbersResponse/content/application~1json/schema'
+          description: Too many numbers to process
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: 'common/common_errors.yml#/components/responses/DefaultError/content/application~1json/schema'
+                  - $ref: '#/components/schemas/ErrorTooManyNumbers'
 
   /v1/10DLC/brands/{brand_id}/campaigns/{campaign_id}/numbers/delete:
     parameters:
@@ -341,7 +362,13 @@ paths:
         '404':
           $ref: "common/common_errors.yml#/components/responses/NotFoundError"
         '413':
-          - $ref: '#/components/responses/ErrorTooManyNumbersResponse/content/application~1json/schema'
+          description: Too many numbers to process
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: 'common/common_errors.yml#/components/responses/DefaultError/content/application~1json/schema'
+                  - $ref: '#/components/schemas/ErrorTooManyNumbers'
 
   /v1/10DLC/brands/{brand_id}/campaigns/{campaign_id}/numbers/{number}:
     parameters:
@@ -361,97 +388,115 @@ paths:
           $ref: "common/common_errors.yml#/components/responses/NotFoundError"
 
 components:
-  example:
+  examples:
     BrandNexmo:
-      brand_id: "56b754b9-b376-434d-b5b9-ef6e5ec4e1ed"
-      entity_type: "PUBLIC_PROFIT"
-      display_name: "Nexmo"
-      company_name: "Nexmo"
-      ein: "20-1111111"
-      alt_business_id_type: "DUNS"
-      alt_business_id: "150483782"
-      phone: "+15556660001"
-      street: "23 Main Street"
-      city: "Holmdel"
-      state: "NJ"
-      postal_code: "07733"
-      country: "US"
-      email: "devrel@vonage.com"
-      stock_symbol: "VG"
-      stock_exchange: "NASDAQ"
-      website: "https://vonage.com"
-      brand_relationship: "KEY_ACCOUNT"
-      vertical: "TECHNOLOGY"
-      _links:
-        self:
-          href: "/10DLC/brands/56b754b9-b376-434d-b5b9-ef6e5ec4e1ed"
-        campaigns:
-          href: "/10DLC/brands/56b754b9-b376-434d-b5b9-ef6e5ec4e1ed/campaigns"
-        use_cases:
-          href: "/10DLC/brands/56b754b9-b376-434d-b5b9-ef6e5ec4e1ed/use_cases"
+      value:
+        brand_id: "56b754b9-b376-434d-b5b9-ef6e5ec4e1ed"
+        entity_type: "PUBLIC_PROFIT"
+        display_name: "Nexmo"
+        company_name: "Nexmo"
+        ein: "20-1111111"
+        alt_business_id_type: "DUNS"
+        alt_business_id: "150483782"
+        phone: "+15556660001"
+        street: "23 Main Street"
+        city: "Holmdel"
+        state: "NJ"
+        postal_code: "07733"
+        country: "US"
+        email: "devrel@vonage.com"
+        stock_symbol: "VG"
+        stock_exchange: "NASDAQ"
+        website: "https://vonage.com"
+        brand_relationship: "KEY_ACCOUNT"
+        vertical: "TECHNOLOGY"
+        _links:
+          self:
+            href: "/10DLC/brands/56b754b9-b376-434d-b5b9-ef6e5ec4e1ed"
+          campaigns:
+            href: "/10DLC/brands/56b754b9-b376-434d-b5b9-ef6e5ec4e1ed/campaigns"
+          use_cases:
+            href: "/10DLC/brands/56b754b9-b376-434d-b5b9-ef6e5ec4e1ed/use_cases"
 
     BrandVonage:
-      brand_id: "242e282e-0ba9-417a-825c-0353c9a024d5"
-      entity_type: "PUBLIC_PROFIT"
-      display_name: "Vonage"
-      company_name: "Vonage"
-      ein: "20-1111111"
-      alt_business_id_type: "DUNS"
-      alt_business_id: "150483782"
-      phone: "+15556660001"
-      street: "23 Main Street"
-      city: "Holmdel"
-      state: "NJ"
-      postal_code: "07733"
-      country: "US"
-      email: "devrel@vonage.com"
-      stock_symbol: "VG"
-      stock_exchange: "NASDAQ"
-      website: "https://vonage.com"
-      brand_relationship: "KEY_ACCOUNT"
-      vertical: "TECHNOLOGY"
-      _links:
-        self:
-          href: "/10DLC/brands/242e282e-0ba9-417a-825c-0353c9a024d5"
-        campaigns:
-          href: "/10DLC/brands/242e282e-0ba9-417a-825c-0353c9a024d5/campaigns"
-        use_cases:
-          href: "/10DLC/brands/242e282e-0ba9-417a-825c-0353c9a024d5/use_cases"
+      value:
+        brand_id: "242e282e-0ba9-417a-825c-0353c9a024d5"
+        entity_type: "PUBLIC_PROFIT"
+        display_name: "Vonage"
+        company_name: "Vonage"
+        ein: "20-1111111"
+        alt_business_id_type: "DUNS"
+        alt_business_id: "150483782"
+        phone: "+15556660001"
+        street: "23 Main Street"
+        city: "Holmdel"
+        state: "NJ"
+        postal_code: "07733"
+        country: "US"
+        email: "devrel@vonage.com"
+        stock_symbol: "VG"
+        stock_exchange: "NASDAQ"
+        website: "https://vonage.com"
+        brand_relationship: "KEY_ACCOUNT"
+        vertical: "TECHNOLOGY"
+        _links:
+          self:
+            href: "/10DLC/brands/242e282e-0ba9-417a-825c-0353c9a024d5"
+          campaigns:
+            href: "/10DLC/brands/242e282e-0ba9-417a-825c-0353c9a024d5/campaigns"
+          use_cases:
+            href: "/10DLC/brands/242e282e-0ba9-417a-825c-0353c9a024d5/use_cases"
 
     Campaign:
-      "campaign_id": "81dd38e8-c172-4698-aa04-35c3709f5167"
-      "csp_id": "string"
-      "reseller_id": "string"
-      "status": "ACTIVE"
-      "created_date": "2020-10-06T08:51:32.119Z"
-      "brand_id": "string"
-      "vertical": "string"
-      "usecase": "string"
-      "sub_usecases": ["string"]
-      "description": "string"
-      "embedded_link": false
-      "embedded_phone": false
-      "affiliate_marketing": true
-      "number_pool": false
-      "age_gated": true
-      "direct_lending": true
-      "subscriber_optin": false
-      "subscriber_optout": false
-      "subscriber_help": false
-      "sample1": "string"
-      "sample2": "string"
-      "sample3": "string"
-      "sample4": "string"
-      "sample5": "string"
-      "message_flow": "string"
-      "help_message": "string"
-      "auto_renewal": true
-      "msisdn": ["14567896543"]
-      _links:
-        self:
-          href: "/10DLC/brands/242e282e-0ba9-417a-825c-0353c9a024d5/campaigns/81dd38e8-c172-4698-aa04-35c3709f5167"
-        numbers:
-          href: "/10DLC/brands/242e282e-0ba9-417a-825c-0353c9a024d5/campaigns/81dd38e8-c172-4698-aa04-35c3709f5167/numbers"
+      value:
+        "campaign_id": "81dd38e8-c172-4698-aa04-35c3709f5167"
+        "csp_id": "string"
+        "reseller_id": "string"
+        "status": "ACTIVE"
+        "created_date": "2020-10-06T08:51:32.119Z"
+        "brand_id": "string"
+        "vertical": "string"
+        "usecase": "string"
+        "sub_usecases": ["string"]
+        "description": "string"
+        "embedded_link": false
+        "embedded_phone": false
+        "affiliate_marketing": true
+        "number_pool": false
+        "age_gated": true
+        "direct_lending": true
+        "subscriber_optin": false
+        "subscriber_optout": false
+        "subscriber_help": false
+        "sample1": "string"
+        "sample2": "string"
+        "sample3": "string"
+        "sample4": "string"
+        "sample5": "string"
+        "message_flow": "string"
+        "help_message": "string"
+        "auto_renewal": true
+        "msisdn": ["14567896543"]
+        _links:
+          self:
+            href: "/10DLC/brands/242e282e-0ba9-417a-825c-0353c9a024d5/campaigns/81dd38e8-c172-4698-aa04-35c3709f5167"
+          numbers:
+            href: "/10DLC/brands/242e282e-0ba9-417a-825c-0353c9a024d5/campaigns/81dd38e8-c172-4698-aa04-35c3709f5167/numbers"
+
+    Numbers:
+      value:
+        - "12025550150"
+        - "12025550142"
+        - "12025550178"
+        - "12025550117"
+        - "12025550182"
+        - "12025550192"
+
+    UseCases:
+      value:
+        - "ACCOUNT_NOTIFICATION"
+        - "CONVERSATIONAL"
+        - "DELIVERY_NOTIFICATION"
 
   responses:
     ErrorCouldNotRemoveNumberResponse:
@@ -459,14 +504,8 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorCouldNotRemoveNumber'
-
-    ErrorTooManyNumbersResponse:
-      description: Error for when there are too many numbers
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorTooManyNumbers'
+            allOf:
+              - $ref: '#/components/schemas/ErrorCouldNotRemoveNumber'
 
     ErrorUnableToParseRequestResponse:
       description: Error for when we cannot parse the client-supplied request
@@ -474,7 +513,7 @@ components:
         application/json:
           schema:
             allOf:
-              - $ref: 'common/common_errors.yml#/components/responses/DefaultError'
+              - $ref: 'common/common_errors.yml#/components/responses/DefaultError/content/application~1json/schema'
               - type: object
                 description: Unable To Parse Request
                 properties:
@@ -513,8 +552,8 @@ components:
                   total_items: 2
                   _embedded:
                     brands:
-                      - $ref: '#/components/example/BrandVonage'
-                      - $ref: '#/components/example/BrandNexmo'
+                      - $ref: '#/components/examples/BrandVonage/value'
+                      - $ref: '#/components/examples/BrandNexmo/value'
     
     MultiCampaignsResponse:
       description: List of campaigns that are associated with a brand
@@ -541,7 +580,7 @@ components:
                   total_items: 1
                   _embedded:
                     campaigns:
-                      - $ref: '#/components/example/Campaign'
+                      - $ref: '#/components/examples/Campaign/value'
 
     MultiNumbersResponse:
       description: List of campaigns that are associated with a brand
@@ -559,6 +598,43 @@ components:
                         type: array
                         items:
                           $ref: '#/components/schemas/Number'
+          examples:
+            simple:
+              value:
+                - page_size: 10
+                  page: 1
+                  total_pages: 1
+                  total_items: 6
+                  _embedded:
+                    numbers:
+                      $ref: '#/components/examples/Numbers/value'
+
+    MultiUseCasesResponse:
+      description: List of use cases that are associated with a brand
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: 'common/hal_structures.yml#/components/schemas/PagedResponse'
+              - type: object
+                properties:
+                  _embedded:
+                    type: object
+                    properties:
+                      use_cases:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/UseCase'
+          examples:
+            simple:
+              value:
+                - page_size: 10
+                  page: 1
+                  total_pages: 1
+                  total_items: 3
+                  _embedded:
+                    use_cases:
+                      $ref: '#/components/examples/UseCases/value'
 
     SingleBrandResponse:
       description: Return a single brand
@@ -580,7 +656,8 @@ components:
                             example: "/10dlc/brands/5782db87-a867-4ccd-a0b5-1b7203cc438c"
           examples:
             vonage:
-              $ref: '#/components/example/BrandVonage'
+              value:
+                $ref: '#/components/examples/BrandVonage/value'
 
     SingleCampaignResponse:
       description: Return a single campaign
@@ -602,7 +679,8 @@ components:
                             example: "/10dlc/brands/5782db87-a867-4ccd-a0b5-1b7203cc438c/campaigns/57b3a89e-c9fa-4860-aec2-ad7f51539dab"
           examples:
             simple:
-              $ref: '#/components/example/Campaign'
+              value:
+                $ref: '#/components/examples/Campaign/value'
 
     SingleNumberResponse:
       description: Return a single number in a campaign
@@ -780,7 +858,7 @@ components:
 
     ErrorCouldNotRemoveNumber:
       allOf:
-        - $ref: 'common/common_errors.yml#/components/responses/DefaultError'
+        - $ref: 'common/common_errors.yml#/components/responses/DefaultError/content/application~1json/schema'
         - type: object
           description: "Deletion Errors"
           properties:
@@ -789,10 +867,10 @@ components:
               example: There were errors removing numbers from the pool
             type:
               description: Link to error / remediation options
-              example: 'https://developer.nexmo.com/api-errors/number-pools#number-deletion-failure'
+              example: 'https://developer.nexmo.com/api-errors/10dlc#number-deletion-failure'
             detail:
               description: Additional information about the error
-              example: We were unable to remove any of the numbers from the pool.
+              example: We were unable to remove any of the numbers from the campaign.
             errors:
               type: array
               items:
@@ -803,10 +881,10 @@ components:
                     example: Number not found
                   type:
                     description: Link to error / remediation options
-                    example: 'https://developer.nexmo.com/api-errors/number-pools#missing-number'
+                    example: 'https://developer.nexmo.com/api-errors/10dlc#missing-number'
                   detail:
                     description: Additional information about the error
-                    example: One or more numbers being deleted are not available in the pool
+                    example: One or more numbers being deleted are not available in the campaign
                   numbers:
                     type: array
                     items:
@@ -815,33 +893,31 @@ components:
                       - '15556660001'
 
     ErrorTooManyNumbers:
-      allOf:
-        - $ref: 'common/common_errors.yml#/components/responses/DefaultError'
-        - type: object
-          description: "Limit Exceeded"
-          properties:
-            title:
-              description: Generic error message
-              example: Bad Request
-            type:
-              description: Link to error / remediation options
-              example: 'https://developer.nexmo.com/api-errors/10dlc#bulk-number-delete-limit'
-            detail:
-              description: Additional information about the error
-              example: The request failed due to validation errors
-            invalid_parameters:
-              type: array
-              items:
-                type: object
-                properties:
-                  name:
-                    type: string
-                    description: Name of the invalid key
-                    example: ids
-                  reason:
-                    type: string
-                    description: Additional validation information
-                    example: Limit of 50 numbers exceeded
+      type: object
+      description: "Limit Exceeded"
+      properties:
+        title:
+          description: Generic error message
+          example: Bad Request
+        type:
+          description: Link to error / remediation options
+          example: 'https://developer.nexmo.com/api-errors/10dlc#bulk-number-delete-limit'
+        detail:
+          description: Additional information about the error
+          example: The request failed due to validation errors
+        invalid_parameters:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Name of the invalid key
+                example: ids
+              reason:
+                type: string
+                description: Additional validation information
+                example: Limit of 50 numbers exceeded
 
     Number:
       description: Telephone Number
@@ -870,11 +946,31 @@ components:
                 href:
                   type: string
 
-    UseCaseId:
-      description: ID associated with a use case for a campaign
+    UseCase:
+      description: Use Cases for Campaigns
       example: b047c816-4449-48a1-b4ad-a4a6ae2e9538
       type: string
-      pattern: ^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$
+      enum:
+        - "2FA"
+        - "ACCOUNT_NOTIFICATION"
+        - "CARRIER_EXEMPT"
+        - "CHARITY"
+        - "CONVERSATIONAL"
+        - "CUSTOMER_CARE"
+        - "DELIVERY_NOTIFICATION"
+        - "EMERGENCY"
+        - "FRAUD_ALERT"
+        - "HIGHER_EDUCATION"
+        - "LOW_VOLUME"
+        - "MARKETING"
+        - "MIXED"
+        - "POLITICAL"
+        - "POLLING_VOTING"
+        - "PUBLIC_SERVICE_ANNOUNCEMENT"
+        - "SECURITY_ALERT"
+        - "SOCIAL"
+        - "SWEEPSTAKE"
+        - "TRIAL"
 
   parameters:
     BrandId:
@@ -900,11 +996,3 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/Number'
-    
-    UseCaseId:
-      name: use_case_id
-      in: path
-      description: ID associated with a use case in a specific campaign
-      required: true
-      schema:
-        $ref: '#/components/schemas/UseCaseId'
