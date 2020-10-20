@@ -834,9 +834,10 @@ components:
         - MESSAGES
         - CONVERSATIONS
         - ASR
+      example: "SMS_AA"
 
     product_sms_example:
-      example: "SMS_AA"
+      example: "SMS_BB"
     
     product_sms:
       $ref: "#/components/schemas/product"
