@@ -15,6 +15,8 @@ servers:
 paths:
   /v1/10DLC/brands:
     get:
+      tags:
+        - Brands
       description: List brands
       operationId: listBrands
       summary: Retrieve all of the brands associated with your account.
@@ -26,6 +28,8 @@ paths:
         '404':
           $ref: "common/common_errors.yml#/components/responses/NotFoundError"
     post:
+      tags:
+        - Brands
       description: Create a new brand
       operationId: createBrand
       summary: Create a new brand for your account
@@ -47,6 +51,8 @@ paths:
     parameters:
       - $ref: '#/components/parameters/BrandId'
     get:
+      tags:
+        - Brands
       summary: Retrieve a specific brand
       description: Get a brand
       operationId: getBrand
@@ -58,6 +64,8 @@ paths:
         '404':
           $ref: "common/common_errors.yml#/components/responses/NotFoundError"
     patch:
+      tags:
+        - Brands
       summary: Partially update a specific brand
       description: Partial update of a brand
       operationId: patchBrand
@@ -75,6 +83,8 @@ paths:
         '404':
           $ref: "common/common_errors.yml#/components/responses/NotFoundError"
     put:
+      tags:
+        - Brands
       summary: Update a specific brand
       description: Update a brand
       operationId: updateBrand
@@ -92,6 +102,8 @@ paths:
         '404':
           $ref: "common/common_errors.yml#/components/responses/NotFoundError"
     delete:
+      tags:
+        - Brands
       summary: Remove a specific brand from your account
       description: Delete a brand
       operationId: deleteBrand
@@ -107,6 +119,8 @@ paths:
     parameters:
       - $ref: "#/components/parameters/BrandId"
     get:
+      tags:
+        - Brands
       summary: Retrieve a list of use cases that are registered for a brand
       description: List use cases for brand
       operationId: listBrandUseCases
@@ -117,27 +131,29 @@ paths:
           $ref: "common/common_errors.yml#/components/responses/BadCredentialsError"
         '404':
           $ref: "common/common_errors.yml#/components/responses/NotFoundError"
-    # post:
-    #   description: Qualify a new use case for a brand
+  #   # post:
+  #   #   description: Qualify a new use case for a brand
 
-  # /v1/10DLC/brands/{brand_id}/use_cases/{use_case_id}:
-  #   get:
-  #     description: Retrieve use case details on a brand
-  #   delete:
-  #     description: Remove a use case from a brand
+  # # /v1/10DLC/brands/{brand_id}/use_cases/{use_case_id}:
+  # #   get:
+  # #     description: Retrieve use case details on a brand
+  # #   delete:
+  # #     description: Remove a use case from a brand
   
-  # /v1/10DLC/brands/{brand_id}/vetting:
-  #   get:
-  #     description: Retrieve current information needed for vetting a brand
-  #   post:
-  #     description: Request vetting for a brand
-  #   put:
-  #     description: Update vetting information for a brand
+  # # /v1/10DLC/brands/{brand_id}/vetting:
+  # #   get:
+  # #     description: Retrieve current information needed for vetting a brand
+  # #   post:
+  # #     description: Request vetting for a brand
+  # #   put:
+  # #     description: Update vetting information for a brand
 
   /v1/10DLC/brands/{brand_id}/campaigns:
     parameters:
       - $ref: '#/components/parameters/BrandId'
     get:
+      tags:
+        - Campaigns
       description: List campaigns
       operationId: listCampaigns
       summary: Retrieve all of the campaigns associated with a brand
@@ -148,29 +164,33 @@ paths:
           $ref: "common/common_errors.yml#/components/responses/BadCredentialsError"
         '404':
           $ref: "common/common_errors.yml#/components/responses/NotFoundError"
-    post:
-      description: Create a new campaign
-      operationId: createCampaign
-      summary: Create a new campaign for a brand
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Campaign'
-      responses:
-        '201':
-          $ref: '#/components/responses/SingleCampaignResponse'
-        '401':
-          $ref: "common/common_errors.yml#/components/responses/BadCredentialsError"
-        '404':
-          $ref: "common/common_errors.yml#/components/responses/NotFoundError"
+    # post:
+    #   tags:
+    #     - Campaign
+    #   description: Create a new campaign
+    #   operationId: createCampaign
+    #   summary: Create a new campaign for a brand
+    #   requestBody:
+    #     required: true
+    #     content:
+    #       application/json:
+    #         schema:
+    #           $ref: '#/components/schemas/Campaign'
+    #   responses:
+    #     '201':
+    #       $ref: '#/components/responses/SingleCampaignResponse'
+    #     '401':
+    #       $ref: "common/common_errors.yml#/components/responses/BadCredentialsError"
+    #     '404':
+    #       $ref: "common/common_errors.yml#/components/responses/NotFoundError"
 
   /v1/10DLC/brands/{brand_id}/campaigns/{campaign_id}:
     parameters:
       - $ref: '#/components/parameters/BrandId'
       - $ref: '#/components/parameters/CampaignId'
     get:
+      tags:
+        - Campaigns
       summary: Retrieve a specific campaign
       description: Get a campaign
       operationId: getCampaign
@@ -182,6 +202,8 @@ paths:
         '404':
           $ref: "common/common_errors.yml#/components/responses/NotFoundError"
     patch:
+      tags:
+        - Campaigns
       summary: Partially update a specific campaign
       description: Partial update of a campaign
       operationId: patchCampaign
@@ -199,6 +221,8 @@ paths:
         '404':
           $ref: "common/common_errors.yml#/components/responses/NotFoundError"
     put:
+      tags:
+        - Campaigns
       summary: Update a specific campaign
       description: Update a campaign
       operationId: updateCampaign
@@ -216,6 +240,8 @@ paths:
         '404':
           $ref: "common/common_errors.yml#/components/responses/NotFoundError"
     delete:
+      tags:
+        - Campaigns
       summary: Stop a specific campaign on a brand
       description: Stop a brand
       operationId: deleteCampaign
@@ -232,6 +258,8 @@ paths:
       - $ref: '#/components/parameters/BrandId'
       - $ref: '#/components/parameters/CampaignId'
     get:
+      tags:
+        - Numbers
       summary: Retrieve Numbers associated with a campaign
       description: Get numbers in campaign
       operationId: getNumbers
@@ -242,133 +270,135 @@ paths:
           $ref: "common/common_errors.yml#/components/responses/BadCredentialsError"
         '404':
           $ref: "common/common_errors.yml#/components/responses/NotFoundError"
-    post:
-      summary: Add numbers to a campaign
-      operationId: addNumbersFromCampaign
-      description: |
-        Adds a series of numbers from a campaign. This endpoint supports _partial successes_. If a request is partially
-        successful, the response code will be `207` and details can be found in the response body.
+    # post:
+    #   tags:
+    #     - Numbers
+    #   summary: Add numbers to a campaign
+    #   operationId: addNumbersFromCampaign
+    #   description: |
+    #     Adds a series of numbers from a campaign. This endpoint supports _partial successes_. If a request is partially
+    #     successful, the response code will be `207` and details can be found in the response body.
 
-        If all items succeed, you will receive a `200`. If all items fail, you will receive a `400`.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              description: Add numbers to a campaign
-              type: object
-              properties:
-                numbers:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/Number'
-                  example:
-                    - '15556660001'
-                    - '15556660002'
-              required:
-                - numbers
-      responses:
-        '201':
-          description: Numbers were successfully added to campaign
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  numbers:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Number'
-                  _links:
-                    type: object
-                    properties:
-                      self:
-                        type: object
-                        properties:
-                          href:
-                            type: string
-                      campaign:
-                        type: object
-                        properties:
-                          href:
-                            type: string
-        '207':
-          $ref: '#/components/responses/ErrorCouldNotRemoveNumberResponse'
-        '400':
-          description: Client errors
-          content:
-            application/json:
-              schema:
-                oneOf:
-                  - $ref: '#/components/responses/ErrorCouldNotRemoveNumberResponse/content/application~1json/schema'
-                  - $ref: '#/components/responses/ErrorUnableToParseRequestResponse/content/application~1json/schema'
-        '401':
-          $ref: "common/common_errors.yml#/components/responses/BadCredentialsError"
-        '404':
-          $ref: "common/common_errors.yml#/components/responses/NotFoundError"
-        '413':
-          description: Too many numbers to process
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: 'common/common_errors.yml#/components/responses/DefaultError/content/application~1json/schema'
-                  - $ref: '#/components/schemas/ErrorTooManyNumbers'
+    #     If all items succeed, you will receive a `200`. If all items fail, you will receive a `400`.
+    #   requestBody:
+    #     required: true
+    #     content:
+    #       application/json:
+    #         schema:
+    #           description: Add numbers to a campaign
+    #           type: object
+    #           properties:
+    #             numbers:
+    #               type: array
+    #               items:
+    #                 $ref: '#/components/schemas/Number'
+    #               example:
+    #                 - '15556660001'
+    #                 - '15556660002'
+    #           required:
+    #             - numbers
+    #   responses:
+    #     '201':
+    #       description: Numbers were successfully added to campaign
+    #       content:
+    #         application/json:
+    #           schema:
+    #             type: object
+    #             properties:
+    #               numbers:
+    #                 type: array
+    #                 items:
+    #                   $ref: '#/components/schemas/Number'
+    #               _links:
+    #                 type: object
+    #                 properties:
+    #                   self:
+    #                     type: object
+    #                     properties:
+    #                       href:
+    #                         type: string
+    #                   campaign:
+    #                     type: object
+    #                     properties:
+    #                       href:
+    #                         type: string
+    #     '207':
+    #       $ref: '#/components/responses/ErrorCouldNotRemoveNumberResponse'
+    #     '400':
+    #       description: Client errors
+    #       content:
+    #         application/json:
+    #           schema:
+    #             oneOf:
+    #               - $ref: '#/components/responses/ErrorCouldNotRemoveNumberResponse/content/application~1json/schema'
+    #               - $ref: '#/components/responses/ErrorUnableToParseRequestResponse/content/application~1json/schema'
+    #     '401':
+    #       $ref: "common/common_errors.yml#/components/responses/BadCredentialsError"
+    #     '404':
+    #       $ref: "common/common_errors.yml#/components/responses/NotFoundError"
+    #     '413':
+    #       description: Too many numbers to process
+    #       content:
+    #         application/json:
+    #           schema:
+    #             allOf:
+    #               - $ref: 'common/common_errors.yml#/components/responses/DefaultError/content/application~1json/schema'
+    #               - $ref: '#/components/schemas/ErrorTooManyNumbers'
 
-  /v1/10DLC/brands/{brand_id}/campaigns/{campaign_id}/numbers/delete:
-    parameters:
-      - $ref: '#/components/parameters/BrandId'
-      - $ref: '#/components/parameters/CampaignId'
-    post:
-      summary: Remove a series of number from a campaign
-      operationId: deleteNumbersFromCampaign
-      description: |
-        Remove a series of numbers from a campaign. This endpoint supports _partial successes_. If a request is partially
-        successful, the response code will be `207` and details can be found in the response body.
+  # /v1/10DLC/brands/{brand_id}/campaigns/{campaign_id}/numbers/delete:
+  #   parameters:
+  #     - $ref: '#/components/parameters/BrandId'
+  #     - $ref: '#/components/parameters/CampaignId'
+  #   post:
+  #     summary: Remove a series of number from a campaign
+  #     operationId: deleteNumbersFromCampaign
+  #     description: |
+  #       Remove a series of numbers from a campaign. This endpoint supports _partial successes_. If a request is partially
+  #       successful, the response code will be `207` and details can be found in the response body.
 
-        If all items succeed, you will receive a `200`. If all items fail, you will receive a `400`.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              description: Add numbers to a number pool
-              type: object
-              properties:
-                numbers:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/Number'
-                  example:
-                    - '15556660001'
-                    - '15556660002'
-              required:
-                - numbers
-      responses:
-        '204':
-          description: No Content
-        '207':
-          $ref: '#/components/responses/ErrorCouldNotRemoveNumberResponse'
-        '400':
-          description: Client errors
-          content:
-            application/json:
-              schema:
-                oneOf:
-                  - $ref: '#/components/responses/ErrorCouldNotRemoveNumberResponse/content/application~1json/schema'
-                  - $ref: '#/components/responses/ErrorUnableToParseRequestResponse/content/application~1json/schema'
-        '401':
-          $ref: "common/common_errors.yml#/components/responses/BadCredentialsError"
-        '404':
-          $ref: "common/common_errors.yml#/components/responses/NotFoundError"
-        '413':
-          description: Too many numbers to process
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: 'common/common_errors.yml#/components/responses/DefaultError/content/application~1json/schema'
-                  - $ref: '#/components/schemas/ErrorTooManyNumbers'
+  #       If all items succeed, you will receive a `200`. If all items fail, you will receive a `400`.
+  #     requestBody:
+  #       required: true
+  #       content:
+  #         application/json:
+  #           schema:
+  #             description: Add numbers to a number pool
+  #             type: object
+  #             properties:
+  #               numbers:
+  #                 type: array
+  #                 items:
+  #                   $ref: '#/components/schemas/Number'
+  #                 example:
+  #                   - '15556660001'
+  #                   - '15556660002'
+  #             required:
+  #               - numbers
+  #     responses:
+  #       '204':
+  #         description: No Content
+  #       '207':
+  #         $ref: '#/components/responses/ErrorCouldNotRemoveNumberResponse'
+  #       '400':
+  #         description: Client errors
+  #         content:
+  #           application/json:
+  #             schema:
+  #               oneOf:
+  #                 - $ref: '#/components/responses/ErrorCouldNotRemoveNumberResponse/content/application~1json/schema'
+  #                 - $ref: '#/components/responses/ErrorUnableToParseRequestResponse/content/application~1json/schema'
+  #       '401':
+  #         $ref: "common/common_errors.yml#/components/responses/BadCredentialsError"
+  #       '404':
+  #         $ref: "common/common_errors.yml#/components/responses/NotFoundError"
+  #       '413':
+  #         description: Too many numbers to process
+  #         content:
+  #           application/json:
+  #             schema:
+  #               allOf:
+  #                 - $ref: 'common/common_errors.yml#/components/responses/DefaultError/content/application~1json/schema'
+  #                 - $ref: '#/components/schemas/ErrorTooManyNumbers'
 
   /v1/10DLC/brands/{brand_id}/campaigns/{campaign_id}/numbers/{number}:
     parameters:
@@ -376,6 +406,8 @@ paths:
       - $ref: '#/components/parameters/CampaignId'
       - $ref: '#/components/parameters/Number'
     delete:
+      tags:
+        - Numbers
       summary: Remove a specific number from a campaign
       description: Remove number from campaign
       operationId: deleteNumber
@@ -996,3 +1028,11 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/Number'
+
+tags:
+  - name: Brands
+    description: APIs relating to working with Brands
+  - name: Campaigns
+    description: APIs relating to working with Campaigns`
+  - name: Numbers
+    description: APIs relating to working with Numbers in Campaigns
