@@ -14,32 +14,40 @@ servers:
 
 paths:
   /v1/10DLC/brands:
-    get:
-      tags:
-        - Brands
-      description: List brands
-      operationId: listBrands
-      summary: Retrieve all of the brands associated with your account.
-      responses:
-        '200':
-          $ref: '#/components/responses/MultiBrandsResponse'
-        '401':
-          $ref: "common/common_errors.yml#/components/responses/BadCredentialsError"
-        '404':
-          $ref: "common/common_errors.yml#/components/responses/NotFoundError"
+    # get:
+    #   tags:
+    #     - Brands
+    #   description: List brands
+    #   operationId: listBrands
+    #   summary: Retrieve all of the brands associated with your account.
+    #   responses:
+    #     '200':
+    #       $ref: '#/components/responses/MultiBrandsResponse'
+    #     '401':
+    #       $ref: "common/common_errors.yml#/components/responses/BadCredentialsError"
+    #     '404':
+    #       $ref: "common/common_errors.yml#/components/responses/NotFoundError"
     post:
       tags:
         - Brands
-      description: Create a new brand
+      description: |
+        Create a new brand for your account. Most accounts will be created 
+        immediately, and you can move on to qualifying a new campaign for
+        the brand. Some brands may require additional vetting. In such cases,
+        please move on to the vetting API endpoints before attempting to 
+        create a campaign. 
+
+        Please note the `entity_type` field, as that field value will help
+        determine which fields are required.
       operationId: createBrand
       summary: Create a new brand for your account
       requestBody:
         $ref: '#/components/requestBodies/CreateBrand'
       responses:
         '201':
-          $ref: '#/components/responses/SingleBrandResponse'
+          $ref: '#/components/responses/SingleBrand'
         '400':
-          $ref: '#/components/responses/ErrorCreateBrandResponse'
+          $ref: '#/components/responses/ErrorCreateBrand'
         '401':
           $ref: "common/common_errors.yml#/components/responses/BadCredentialsError"
         '404':
@@ -56,7 +64,7 @@ paths:
       operationId: getBrand
       responses:
         '200':
-          $ref: '#/components/responses/SingleBrandResponse'
+          $ref: '#/components/responses/SingleBrand'
         '401':
           $ref: "common/common_errors.yml#/components/responses/BadCredentialsError"
         '404':
@@ -75,7 +83,7 @@ paths:
               $ref: '#/components/schemas/BrandEditableFields'
       responses:
         '200':
-          $ref: '#/components/responses/SingleBrandResponse'
+          $ref: '#/components/responses/SingleBrand'
         '401':
           $ref: "common/common_errors.yml#/components/responses/BadCredentialsError"
         '404':
@@ -94,7 +102,7 @@ paths:
               $ref: '#/components/schemas/BrandEditableFields'
       responses:
         '200':
-          $ref: '#/components/responses/SingleBrandResponse'
+          $ref: '#/components/responses/SingleBrand'
         '401':
           $ref: "common/common_errors.yml#/components/responses/BadCredentialsError"
         '404':
@@ -113,38 +121,42 @@ paths:
         '404':
           $ref: "common/common_errors.yml#/components/responses/NotFoundError"
 
-  /v1/10DLC/brands/{brand_id}/use_cases:
+  /v1/10DLC/brands/{brand_id}/use_cases/{use_case}:
     parameters:
       - $ref: "#/components/parameters/BrandId"
+      - $ref: "#/components/parameters/UseCase"
     get:
       tags:
         - Brands
-      summary: Retrieve a list of use cases that are registered for a brand
-      description: List use cases for brand
-      operationId: listBrandUseCases
+      description: |
+        Check to see if a brand is qualified to run a campaign against a given
+        use case. A brand must check this endpoint before attempting to generate
+        a new campaign. 
+
+        If the use case is not qualified, the brand may request additional third
+        party vetting to see if the additional use cases can be added to their
+        account.
+      summary: Check Use Case Qualifications for a Brand
+      operationId: qualifyBrandUseCase
       responses:
         '200':
-          $ref: '#/components/responses/MultiUseCasesResponse'
+          $ref: '#/components/responses/QualifiedUseCase'
+        '400':
+          $ref: '#/components/responses/ErrorQualifyBrand'
         '401':
           $ref: "common/common_errors.yml#/components/responses/BadCredentialsError"
         '404':
           $ref: "common/common_errors.yml#/components/responses/NotFoundError"
-  #   # post:
-  #   #   description: Qualify a new use case for a brand
-
-  # # /v1/10DLC/brands/{brand_id}/use_cases/{use_case_id}:
-  # #   get:
-  # #     description: Retrieve use case details on a brand
-  # #   delete:
-  # #     description: Remove a use case from a brand
+        '429':
+          $ref: "common/common_errors.yml#/components/responses/ThrottledError"
   
-  # # /v1/10DLC/brands/{brand_id}/vetting:
-  # #   get:
-  # #     description: Retrieve current information needed for vetting a brand
-  # #   post:
-  # #     description: Request vetting for a brand
-  # #   put:
-  # #     description: Update vetting information for a brand
+  # /v1/10DLC/brands/{brand_id}/vetting:
+  #   get:
+  #     description: Retrieve current information needed for vetting a brand
+  #   post:
+  #     description: Request vetting for a brand
+  #   put:
+  #     description: Update vetting information for a brand
 
   /v1/10DLC/brands/{brand_id}/campaigns:
     parameters:
@@ -280,135 +292,57 @@ paths:
           $ref: "common/common_errors.yml#/components/responses/BadCredentialsError"
         '404':
           $ref: "common/common_errors.yml#/components/responses/NotFoundError"
-    # post:
-    #   tags:
-    #     - Numbers
-    #   summary: Add numbers to a campaign
-    #   operationId: addNumbersFromCampaign
-    #   description: |
-    #     Adds a series of numbers from a campaign. This endpoint supports _partial successes_. If a request is partially
-    #     successful, the response code will be `207` and details can be found in the response body.
+    post:
+      tags:
+        - Numbers
+      summary: Add numbers to a campaign
+      operationId: addNumbersToCampaign
+      description: |
+        Adds a series of numbers from a campaign. This endpoint supports _partial successes_. If a request is partially
+        successful, the response code will be `207` and details can be found in the response body.
 
-    #     If all items succeed, you will receive a `200`. If all items fail, you will receive a `400`.
-    #   requestBody:
-    #     required: true
-    #     content:
-    #       application/json:
-    #         schema:
-    #           description: Add numbers to a campaign
-    #           type: object
-    #           properties:
-    #             numbers:
-    #               type: array
-    #               items:
-    #                 $ref: '#/components/schemas/Number'
-    #               example:
-    #                 - '15556660001'
-    #                 - '15556660002'
-    #           required:
-    #             - numbers
-    #   responses:
-    #     '201':
-    #       description: Numbers were successfully added to campaign
-    #       content:
-    #         application/json:
-    #           schema:
-    #             type: object
-    #             properties:
-    #               numbers:
-    #                 type: array
-    #                 items:
-    #                   $ref: '#/components/schemas/Number'
-    #               _links:
-    #                 type: object
-    #                 properties:
-    #                   self:
-    #                     type: object
-    #                     properties:
-    #                       href:
-    #                         type: string
-    #                   campaign:
-    #                     type: object
-    #                     properties:
-    #                       href:
-    #                         type: string
-    #     '207':
-    #       $ref: '#/components/responses/ErrorCouldNotRemoveNumberResponse'
-    #     '400':
-    #       description: Client errors
-    #       content:
-    #         application/json:
-    #           schema:
-    #             oneOf:
-    #               - $ref: '#/components/responses/ErrorCouldNotRemoveNumberResponse/content/application~1json/schema'
-    #               - $ref: '#/components/responses/ErrorUnableToParseRequestResponse/content/application~1json/schema'
-    #     '401':
-    #       $ref: "common/common_errors.yml#/components/responses/BadCredentialsError"
-    #     '404':
-    #       $ref: "common/common_errors.yml#/components/responses/NotFoundError"
-    #     '413':
-    #       description: Too many numbers to process
-    #       content:
-    #         application/json:
-    #           schema:
-    #             allOf:
-    #               - $ref: 'common/common_errors.yml#/components/responses/DefaultError/content/application~1json/schema'
-    #               - $ref: '#/components/schemas/ErrorTooManyNumbers'
+        If all items succeed, you will receive a `200`. If all items fail, you will receive a `400`.
+      requestBody:
+        $ref: '#/components/requestBodies/BulkNumbers'
+      responses:
+        '201':
+          $ref: '#/components/responses/BulkNumberSuccess'
+        '207':
+          $ref: '#/components/responses/BulkPartialSuccess'
+        '401':
+          $ref: "common/common_errors.yml#/components/responses/BadCredentialsError"
+        '404':
+          $ref: "common/common_errors.yml#/components/responses/NotFoundError"
+        '413':
+          $ref: '#/components/responses/BulkNumberLimitExceeded'
 
-  # /v1/10DLC/brands/{brand_id}/campaigns/{campaign_id}/numbers/delete:
-  #   parameters:
-  #     - $ref: '#/components/parameters/BrandId'
-  #     - $ref: '#/components/parameters/CampaignId'
-  #   post:
-  #     summary: Remove a series of number from a campaign
-  #     operationId: deleteNumbersFromCampaign
-  #     description: |
-  #       Remove a series of numbers from a campaign. This endpoint supports _partial successes_. If a request is partially
-  #       successful, the response code will be `207` and details can be found in the response body.
+  /v1/10DLC/brands/{brand_id}/campaigns/{campaign_id}/numbers/delete:
+    parameters:
+      - $ref: '#/components/parameters/BrandId'
+      - $ref: '#/components/parameters/CampaignId'
+    post:
+      tags:
+        - Numbers
+      summary: Remove a series of number from a campaign
+      operationId: deleteNumbersFromCampaign
+      description: |
+        Remove a series of numbers from a campaign. This endpoint supports _partial successes_. If a request is partially
+        successful, the response code will be `207` and details can be found in the response body.
 
-  #       If all items succeed, you will receive a `200`. If all items fail, you will receive a `400`.
-  #     requestBody:
-  #       required: true
-  #       content:
-  #         application/json:
-  #           schema:
-  #             description: Add numbers to a number pool
-  #             type: object
-  #             properties:
-  #               numbers:
-  #                 type: array
-  #                 items:
-  #                   $ref: '#/components/schemas/Number'
-  #                 example:
-  #                   - '15556660001'
-  #                   - '15556660002'
-  #             required:
-  #               - numbers
-  #     responses:
-  #       '204':
-  #         description: No Content
-  #       '207':
-  #         $ref: '#/components/responses/ErrorCouldNotRemoveNumberResponse'
-  #       '400':
-  #         description: Client errors
-  #         content:
-  #           application/json:
-  #             schema:
-  #               oneOf:
-  #                 - $ref: '#/components/responses/ErrorCouldNotRemoveNumberResponse/content/application~1json/schema'
-  #                 - $ref: '#/components/responses/ErrorUnableToParseRequestResponse/content/application~1json/schema'
-  #       '401':
-  #         $ref: "common/common_errors.yml#/components/responses/BadCredentialsError"
-  #       '404':
-  #         $ref: "common/common_errors.yml#/components/responses/NotFoundError"
-  #       '413':
-  #         description: Too many numbers to process
-  #         content:
-  #           application/json:
-  #             schema:
-  #               allOf:
-  #                 - $ref: 'common/common_errors.yml#/components/responses/DefaultError/content/application~1json/schema'
-  #                 - $ref: '#/components/schemas/ErrorTooManyNumbers'
+        If all items succeed, you will receive a `200`. If all items fail, you will receive a `400`.
+      requestBody:
+        $ref: '#/components/requestBodies/BulkNumbers'
+      responses:
+        '201':
+          $ref: '#/components/responses/BulkNumberSuccess'
+        '207':
+          $ref: '#/components/responses/BulkPartialSuccess'
+        '401':
+          $ref: "common/common_errors.yml#/components/responses/BadCredentialsError"
+        '404':
+          $ref: "common/common_errors.yml#/components/responses/NotFoundError"
+        '413':
+          $ref: '#/components/responses/BulkNumberLimitExceeded'
 
   /v1/10DLC/brands/{brand_id}/campaigns/{campaign_id}/numbers/{number}:
     parameters:
@@ -485,13 +419,13 @@ components:
           self:
             href: "/10DLC/brands/BLQKOPK"
           campaigns:
-            href: "/10DLC/brands/BLQKOPK/campaigns"
+            href: "https://api.nexmo.com/v1/10DLC/brands/BLQKOPK/campaigns"
           use_cases:
             href: "/10DLC/brands/BLQKOPK/use_cases"
 
     Campaign:
       value:
-        campaign_id: "81dd38e8-c172-4698-aa04-35c3709f5167"
+        campaign_id: "C1DEB879"
         csp_id: "string"
         reseller_id: "string"
         status: "ACTIVE"
@@ -520,9 +454,17 @@ components:
         auto_renewal: true
         _links:
           self:
-            href: "/10DLC/brands/BLQKOPK/campaigns/81dd38e8-c172-4698-aa04-35c3709f5167"
+            $ref: '#/components/examples/LinkCampaign'
           numbers:
             href: "/10DLC/brands/BLQKOPK/campaigns/81dd38e8-c172-4698-aa04-35c3709f5167/numbers"
+
+    LinkBrand:
+      value:
+        "https://api.nexmo.com/v1/10DLC/brands/BLQKOPK"
+
+    LinkCampaign:
+      value:
+        "https://api.nexmo.com/v1/10DLC/brands/BLQKOPK/campaigns/C1DEB879/"
 
     Numbers:
       value:
@@ -539,7 +481,119 @@ components:
         - "CONVERSATIONAL"
         - "DELIVERY_NOTIFICATION"
 
+    ValidUseCase:
+      value:
+        use_case: "POLITICAL"
+        quarterly_fee: 30
+        mno_metadata:
+          "10017":
+            surcharge: "0.0025"
+            min_msg_samples: 2
+            msg_class: Q
+            req_subscriber_opt_in: false
+            req_subscriber_help: false
+            req_subscriber_opt_out: false
+            mno: "AT&T"
+            tpm: 2000
+            mno_support: true
+            no_embedded_link: true
+            qualify: true
+          "10035":
+            min_msg_samples: 2
+            req_subscriber_opt_in: false
+            req_subscriber_help: false
+            req_subscriber_opt_out: false
+            mno: "TMO"
+            mno_support: true
+            mno_review: true
+            no_embedded_link: true
+            no_embedded_phone: true
+            qualify: true
+            brand_tier: "LOW"
+
   responses:
+    BulkNumberLimitExceeded:
+      description: Too many numbers to process
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: 'common/common_errors.yml#/components/responses/DefaultError/content/application~1json/schema'
+              - type: object
+                description: Bulk Operations limit was exceeded
+                properties:
+                  title:
+                    description: Payload Too Large
+                    example: Payload Too Large
+                  type:
+                    description: Link to error / remediation options
+                    example: 'https://developer.nexmo.com/api-errors/10dlc#bulk-limit-exceeded'
+                  detail:
+                    description: Additional information about the error
+                    example: Your request contained too many items. Please reduce the number of items to 50 and try again.
+
+    BulkPartialSuccess:
+      description: Partially successfull bulk operation
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/responses/BulkNumberSuccess/content/application~1json/schema'
+              - type: object
+                properties:
+                  numbers:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Number'
+                    example:
+                      - "15556660001"
+                  errors:
+                    allOf:
+                      - $ref: 'common/common_errors.yml#/components/responses/DefaultError/content/application~1json/schema'
+                      - type: object
+                        description: Unable to process all numbers successfully
+                        properties:
+                          title:
+                            description: Description of error
+                            example: Not all of the numbers could be operated on successfully
+                          type:
+                            description: Link to error / remediation options
+                            example: 'https://developer.nexmo.com/api-errors/10dlc#bulk-partial-success'
+                          detail:
+                            description: Additional information about the error
+                            example: Some or all of the numbers you attempted to work with could not be processed.
+                          numbers:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Number'
+                            example:
+                              - "15556660002"
+
+    BulkNumberSuccess:
+      description: Successful bulk operation
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              numbers:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Number'
+                example:
+                  - "15556660001"
+                  - "15556660002"
+              _links:
+                type: object
+                properties:
+                  campaign:
+                    type: object
+                    properties:
+                      href:
+                        type: string
+                        example:
+                          $ref: '#/components/examples/LinkCampaign'
+
     ErrorCouldNotRemoveNumberResponse:
       description: Error response for number deletion errors
       content:
@@ -548,7 +602,7 @@ components:
             allOf:
               - $ref: '#/components/schemas/ErrorCouldNotRemoveNumber'
 
-    ErrorCreateBrandResponse:
+    ErrorCreateBrand:
       description: Various errors that can occur during brand creation
       content:
         application/json:
@@ -585,6 +639,44 @@ components:
                           type: string
                           description: Error text
                           example: Field 'company_name' is not unique
+
+    ErrorQualifyBrand:
+      description: Various errors that can occur during brand use case qualification
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: 'common/common_errors.yml#/components/responses/DefaultError/content/application~1json/schema'
+              - type: object
+                description: Errors with submission
+                properties:
+                  title:
+                    description: Generic error message
+                    example: There were some issues with the submitted data
+                  type:
+                    description: Link to error / remediation options
+                    example: 'https://developer.nexmo.com/api-errors/10dlc#invalid-usecase-data'
+                  detail:
+                    description: Additional information about the error
+                    example: There were some errors qualifying the use case for your brand, please correct the requested fields
+                  errors:
+                    description: Errors that are passed through from the Campaign Registry
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: integer
+                          description: Campaign Registry error code
+                          example: 501
+                        field:
+                          type: string
+                          description: Field that had a data issue
+                          example: use_case
+                        description:
+                          type: string
+                          description: Error text
+                          example: Unrecognized Usecase
 
     ErrorUnableToParseRequestResponse:
       description: Error for when we cannot parse the client-supplied request
@@ -677,6 +769,19 @@ components:
                         type: array
                         items:
                           $ref: '#/components/schemas/Number'
+                        example:
+                          - "15556660001"
+                          - "15556660002"
+                      _links:
+                        type: object
+                        properties:
+                          campaign:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                                example:
+                                  $ref: '#/components/examples/LinkCampaign'
           examples:
             simple:
               value:
@@ -715,7 +820,34 @@ components:
                     use_cases:
                       $ref: '#/components/examples/UseCases/value'
 
-    SingleBrandResponse:
+    QualifiedUseCase:
+      description: A valid qualified use case for a brand
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              use_case:
+                type: string
+                example:
+                  $ref: '#/components/examples/ValidUseCase/value/use_case'
+              quarterly_fee:
+                type: string
+                example:
+                  $ref: '#/components/examples/ValidUseCase/value/quarterly_fee'
+              mno_metadata:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/UseCaseMNOMetadata'
+                example:
+                  $ref: '#/components/examples/ValidUseCase/value/mno_metadata'
+
+          examples:
+            simple:
+              value:
+                $ref: '#/components/examples/ValidUseCase/value'
+
+    SingleBrand:
       description: Return a single brand
       content:
         application/json:
@@ -781,6 +913,26 @@ components:
                             example: "/10dlc/brands/5782db87-a867-4ccd-a0b5-1b7203cc438c/campaigns/57b3a89e-c9fa-4860-aec2-ad7f51539dab"
 
   requestBodies:
+    BulkNumbers:
+      required: true
+      content:
+        application/json:
+          schema:
+            description: List of numbers to perform a bulk operation against
+            type: object
+            properties:
+              numbers:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Number'
+                minItems: 1
+                maxItems: 50
+                example:
+                  - '15556660001'
+                  - '15556660002'
+            required:
+              - numbers
+
     CreateBrand:
       required: true
       content:
@@ -1129,9 +1281,9 @@ components:
 
     CampaignId:
       description: ID associated with a specific campaign
-      example: 57b3a89e-c9fa-4860-aec2-ad7f51539dab
+      example: C1DEB879
       type: string
-      pattern: ^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}$
+      pattern: ^[0-9A-F]{7}$
 
     CampaignResponse:
       allOf:
@@ -1386,6 +1538,42 @@ components:
         - "SWEEPSTAKE"
         - "TRIAL"
 
+    UseCaseMNOMetadata:
+      type: object
+      properties:
+        mno:
+          type: string
+        mno_support:
+          type: boolean
+        mno_review:
+          type: boolean
+        qualify:
+          type: boolean
+        min_msg_samples:
+          type: integer
+          example: 2
+        req_subscriber_opt_in:
+          type: boolean
+        req_subscriber_opt_out:
+          type: boolean
+          example: false
+        req_subscriber_help:
+          type: boolean
+        no_embedded_link:
+          type: boolean
+        no_embedded_phone:
+          type: boolean
+        surcharge:
+          type: string
+          example: "0.0025"
+        msg_class:
+          type: string
+          example: "Q"
+        tpm:
+          type: integer
+        brand_tier:
+          type: string
+
   parameters:
     BrandId:
       name: brand_id
@@ -1410,6 +1598,14 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/Number'
+
+    UseCase:
+      in: path
+      name: use_case
+      description: Name of a use case
+      required: true
+      schema:
+        type: string
 
 tags:
   - name: Brands
