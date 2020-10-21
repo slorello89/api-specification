@@ -38,6 +38,8 @@ paths:
       responses:
         '201':
           $ref: '#/components/responses/SingleBrandResponse'
+        '400':
+          $ref: '#/components/responses/ErrorCreateBrandResponse'
         '401':
           $ref: "common/common_errors.yml#/components/responses/BadCredentialsError"
         '404':
@@ -70,7 +72,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Brand'
+              $ref: '#/components/schemas/BrandEditableFields'
       responses:
         '200':
           $ref: '#/components/responses/SingleBrandResponse'
@@ -89,7 +91,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Brand'
+              $ref: '#/components/schemas/BrandEditableFields'
       responses:
         '200':
           $ref: '#/components/responses/SingleBrandResponse'
@@ -160,18 +162,30 @@ paths:
           $ref: "common/common_errors.yml#/components/responses/BadCredentialsError"
         '404':
           $ref: "common/common_errors.yml#/components/responses/NotFoundError"
+    post:
+      tags:
+        - Campaigns
+      description: Create Campaign
+      operationId: createCampaign
+      summary: Add a new campaign to a brand
+      requestBody:
+        $ref: '#/components/requestBodies/CreateCampaign'
+      responses:
+        '201':
+          $ref: '#/components/responses/SingleCampaignResponse'
+        '401':
+          $ref: "common/common_errors.yml#/components/responses/BadCredentialsError"
+        '404':
+          $ref: "common/common_errors.yml#/components/responses/NotFoundError"
+
     # post:
     #   tags:
     #     - Campaign
-    #   description: Create a new campaign
+    #   description: Create a new brand
     #   operationId: createCampaign
-    #   summary: Create a new campaign for a brand
+    #   summary: Create a new brand for your account
     #   requestBody:
-    #     required: true
-    #     content:
-    #       application/json:
-    #         schema:
-    #           $ref: '#/components/schemas/Campaign'
+    #     $ref: '#/components/requestBodies/CreateBrand'
     #   responses:
     #     '201':
     #       $ref: '#/components/responses/SingleCampaignResponse'
@@ -448,7 +462,7 @@ components:
 
     BrandVonage:
       value:
-        brand_id: "242e282e-0ba9-417a-825c-0353c9a024d5"
+        brand_id: "BLQKOPK"
         entity_type: "PUBLIC_PROFIT"
         display_name: "Vonage"
         company_name: "Vonage"
@@ -469,47 +483,46 @@ components:
         vertical: "TECHNOLOGY"
         _links:
           self:
-            href: "/10DLC/brands/242e282e-0ba9-417a-825c-0353c9a024d5"
+            href: "/10DLC/brands/BLQKOPK"
           campaigns:
-            href: "/10DLC/brands/242e282e-0ba9-417a-825c-0353c9a024d5/campaigns"
+            href: "/10DLC/brands/BLQKOPK/campaigns"
           use_cases:
-            href: "/10DLC/brands/242e282e-0ba9-417a-825c-0353c9a024d5/use_cases"
+            href: "/10DLC/brands/BLQKOPK/use_cases"
 
     Campaign:
       value:
-        "campaign_id": "81dd38e8-c172-4698-aa04-35c3709f5167"
-        "csp_id": "string"
-        "reseller_id": "string"
-        "status": "ACTIVE"
-        "created_date": "2020-10-06T08:51:32.119Z"
-        "brand_id": "string"
-        "vertical": "string"
-        "usecase": "string"
-        "sub_usecases": ["string"]
-        "description": "string"
-        "embedded_link": false
-        "embedded_phone": false
-        "affiliate_marketing": true
-        "number_pool": false
-        "age_gated": true
-        "direct_lending": true
-        "subscriber_optin": false
-        "subscriber_optout": false
-        "subscriber_help": false
-        "sample1": "string"
-        "sample2": "string"
-        "sample3": "string"
-        "sample4": "string"
-        "sample5": "string"
-        "message_flow": "string"
-        "help_message": "string"
-        "auto_renewal": true
-        "msisdn": ["14567896543"]
+        campaign_id: "81dd38e8-c172-4698-aa04-35c3709f5167"
+        csp_id: "string"
+        reseller_id: "string"
+        status: "ACTIVE"
+        created_date: "2020-10-06T08:51:32.119Z"
+        brand_id: "BLQKOPK"
+        vertical: "TECHNOLOGY"
+        use_case: "ACCOUNT_NOTIFICATION"
+        sub_use_cases: ["2FA", "SECURITY_ALERT"]
+        description: "User notifications"
+        embedded_link: false
+        embedded_phone: false
+        affiliate_marketing: true
+        number_pool: false
+        age_gated: true
+        direct_lending: true
+        subscriber_optin: false
+        subscriber_optout: false
+        subscriber_help: false
+        sample_one: "Sample Message"
+        sample_two: "Additional Sample Message"
+        sample_three: "Additional Sample Message"
+        sample_four: "Additional Sample Message"
+        sample_five: "Additional Sample Message"
+        message_flow: "string"
+        help_message: "string"
+        auto_renewal: true
         _links:
           self:
-            href: "/10DLC/brands/242e282e-0ba9-417a-825c-0353c9a024d5/campaigns/81dd38e8-c172-4698-aa04-35c3709f5167"
+            href: "/10DLC/brands/BLQKOPK/campaigns/81dd38e8-c172-4698-aa04-35c3709f5167"
           numbers:
-            href: "/10DLC/brands/242e282e-0ba9-417a-825c-0353c9a024d5/campaigns/81dd38e8-c172-4698-aa04-35c3709f5167/numbers"
+            href: "/10DLC/brands/BLQKOPK/campaigns/81dd38e8-c172-4698-aa04-35c3709f5167/numbers"
 
     Numbers:
       value:
@@ -534,6 +547,44 @@ components:
           schema:
             allOf:
               - $ref: '#/components/schemas/ErrorCouldNotRemoveNumber'
+
+    ErrorCreateBrandResponse:
+      description: Various errors that can occur during brand creation
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: 'common/common_errors.yml#/components/responses/DefaultError/content/application~1json/schema'
+              - type: object
+                description: Errors with submission
+                properties:
+                  title:
+                    description: Generic error message
+                    example: There were some issues with the submitted data
+                  type:
+                    description: Link to error / remediation options
+                    example: 'https://developer.nexmo.com/api-errors/10dlc#invalid-brand-data'
+                  detail:
+                    description: Additional information about the error
+                    example: There were some errors submitting your brand, please correct the requested fields
+                  errors:
+                    description: Errors that are passed through from the Campaign Registry
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: integer
+                          description: Campaign Registry error code
+                          example: 503
+                        field:
+                          type: string
+                          description: Field that had a data issue
+                          example: company_name
+                        description:
+                          type: string
+                          description: Error text
+                          example: Field 'company_name' is not unique
 
     ErrorUnableToParseRequestResponse:
       description: Error for when we cannot parse the client-supplied request
@@ -622,7 +673,7 @@ components:
                   _embedded:
                     type: object
                     properties:
-                      brands:
+                      numbers:
                         type: array
                         items:
                           $ref: '#/components/schemas/Number'
@@ -753,6 +804,43 @@ components:
                 allOf:
                   - $ref: '#/components/schemas/CreatePublicCompanyBrand'
 
+    CreateCampaign:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              $ref: '#/components/schemas/Campaign/properties'
+            required:
+              - brand_id
+              - vertical
+              - use_case
+              - description
+
+    UpdateBrand:
+      required: true
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - title: Individual Person
+                x-tab-id: IndividualPerson
+                allOf:
+                  - $ref: '#/components/schemas/UpdateIndividualBrand'
+              - title: Non-Profit
+                x-tab-id: NonProfit
+                allOf:
+                  - $ref: '#/components/schemas/UpdateNonProfitBrand'
+              - title: Private Company
+                x-tab-id: PrivateCompany
+                allOf:
+                  - $ref: '#/components/schemas/UpdatePrivateCompanyBrand'
+              - title: Public Company
+                x-tab-id: PublicCompany
+                allOf:
+                  - $ref: '#/components/schemas/UpdatePublicCompanyBrand'
+
   schemas:
     Brand:
       type: object
@@ -828,6 +916,78 @@ components:
             $ref: '#/components/examples/BrandVonage/value/website'
         brand_relationship:
           type: string
+          enum:
+            - BASIC_ACCOUNT
+            - SMALL_ACCOUNT
+            - MEDIUM_ACCOUNT
+            - LARGE_ACCOUNT
+            - KEY_ACCOUNT
+          example:
+            $ref: '#/components/examples/BrandVonage/value/brand_relationship'
+        vertical:
+          type: string
+          example:
+            $ref: '#/components/examples/BrandVonage/value/vertical'
+
+    BrandEditableFields:
+      description: Fields that are editable for a brand
+      type: object
+      properties:
+        entity_type:
+          type: string
+          enum:
+            - INDIVIDUAL
+            - PRIVATE_PROFIT
+            - PUBLIC_PROFIC
+            - NON_PROFIT
+          example:
+            $ref: '#/components/examples/BrandVonage/value/entity_type'
+        display_name:
+          type: string
+          example:
+            $ref: '#/components/examples/BrandVonage/value/display_name'
+        website:
+          type: string
+          example:
+            $ref: '#/components/examples/BrandVonage/value/website'
+        phone:
+          type: string
+          example:
+            $ref: '#/components/examples/BrandVonage/value/phone'
+        street:
+          type: string
+          example:
+            $ref: '#/components/examples/BrandVonage/value/street'
+        city:
+          type: string
+          example:
+            $ref: '#/components/examples/BrandVonage/value/city'
+        state:
+          type: string
+          example:
+            $ref: '#/components/examples/BrandVonage/value/state'
+        postal_code:
+          type: string
+          example:
+            $ref: '#/components/examples/BrandVonage/value/postal_code'
+        country:
+          type: string
+          example:
+            $ref: '#/components/examples/BrandVonage/value/country'
+        email:
+          type: string
+          example:
+            $ref: '#/components/examples/BrandVonage/value/email'
+        stock_symbol:
+          type: string
+          example:
+            $ref: '#/components/examples/BrandVonage/value/stock_symbol'
+        stock_exchange:
+          type: string
+          example:
+            $ref: '#/components/examples/BrandVonage/value/stock_exchange'
+        brand_relationship:
+          type: string
           example:
             $ref: '#/components/examples/BrandVonage/value/brand_relationship'
         vertical:
@@ -844,8 +1004,12 @@ components:
               $ref: '#/components/schemas/BrandId'
             created_date:
               type: string
+              pattern: ^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$
+              example: '2020-01-02 05:12:14'
             last_updated:
               type: string
+              pattern: ^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$
+              example: '2020-02-02 14:12:00'
             _links:
               type: object
               properties:
@@ -854,17 +1018,20 @@ components:
                   properties:
                     href:
                       type: string
+                      example: 'https://api.nexmo.com/10dlc/brands/BLQKOPK'
                 campaigns:
                   type: object
                   properties:
                     href:
                       type: string
+                      example: 'https://api.nexmo.com/10dlc/brands/BLQKOPK/campaigns'
 
     BrandId:
       description: Brand ID associated with a number
-      example: b047c816-4449-48a1-b4ad-a4a6ae2e9538
+      example:
+        $ref: '#/components/examples/BrandVonage/value/brand_id'
       type: string
-      pattern: ^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}$
+      pattern: ^[0-9A-F]{7}$
 
     Campaign:
       type: object
@@ -873,50 +1040,92 @@ components:
           $ref: '#/components/schemas/BrandId'
         vertical:
           type: string
+          example:
+            $ref: '#/components/examples/Campaign/value/vertical'
         use_case:
           type: string
+          example:
+            $ref: '#/components/examples/Campaign/value/use_case'
         sub_use_cases:
           type: array
           items:
             type: string
+          example:
+            $ref: '#/components/examples/Campaign/value/sub_use_cases'
         reseller_id:
           type: string
+          example:
+            $ref: '#/components/examples/Campaign/value/reseller_id'
         description:
           type: string
+          example:
+            $ref: '#/components/examples/Campaign/value/description'
         embedded_link:
           type: boolean
+          example:
+            $ref: '#/components/examples/Campaign/value/embedded_link'
         embedded_phone:
           type: boolean
+          example:
+            $ref: '#/components/examples/Campaign/value/embedded_phone'
         number_pool:
           type: boolean
+          example:
+            $ref: '#/components/examples/Campaign/value/number_pool'
         age_gated:
           type: boolean
+          example:
+            $ref: '#/components/examples/Campaign/value/age_gated'
         direct_lending:
           type: boolean
+          example:
+            $ref: '#/components/examples/Campaign/value/direct_lending'
         subscriber_optin:
           type: boolean
+          example:
+            $ref: '#/components/examples/Campaign/value/subscriber_optin'
         subscriber_optout:
           type: boolean
+          example:
+            $ref: '#/components/examples/Campaign/value/subscriber_optout'
         subscriber_help:
           type: boolean
+          example:
+            $ref: '#/components/examples/Campaign/value/subscriber_help'
         sample_one:
           type: string
+          example:
+            $ref: '#/components/examples/Campaign/value/sample_one'
         sample_two:
           type: string
+          example:
+            $ref: '#/components/examples/Campaign/value/sample_two'
         sample_three:
           type: string
+          example:
+            $ref: '#/components/examples/Campaign/value/sample_three'
         sample_four:
           type: string
+          example:
+            $ref: '#/components/examples/Campaign/value/sample_four'
         message_flow:
           type: string
+          example:
+            $ref: '#/components/examples/Campaign/value/message_flow'
         help_message:
           type: string
-        mno_ids:
-          type: array
-          items:
-            type: string
+          example:
+            $ref: '#/components/examples/Campaign/value/help_message'
+        # mno_ids:
+        #   type: array
+        #   items:
+        #     type: string
+        #   example:
+        #     $ref: '#/components/examples/Campaign/value/mno_ids'
         affiliate_marketing:
           type: boolean
+          example:
+            $ref: '#/components/examples/Campaign/value/affiliate_marketing'
 
     CampaignId:
       description: ID associated with a specific campaign
@@ -1096,6 +1305,60 @@ components:
               properties:
                 href:
                   type: string
+
+    UpdateIndividualBrand:
+      type: object
+      properties:
+        $ref: '#/components/schemas/BrandEditableFields/properties'
+      required:
+        - entity_type
+        - display_name
+        - phone
+        - country
+        - email
+        - brand_relationship
+
+    UpdateNonProfitBrand:
+      type: object
+      properties:
+        $ref: '#/components/schemas/BrandEditableFields/properties'
+      required:
+        - entity_type
+        - display_name
+        - ein
+        - phone
+        - country
+        - email
+        - brand_relationship
+        - website
+
+    UpdatePrivateCompanyBrand:
+      type: object
+      properties:
+        $ref: '#/components/schemas/BrandEditableFields/properties'
+      required:
+        - entity_type
+        - display_name
+        - ein
+        - phone
+        - country
+        - email
+        - brand_relationship
+
+    UpdatePublicCompanyBrand:
+      type: object
+      properties:
+        $ref: '#/components/schemas/BrandEditableFields/properties'
+      required:
+        - entity_type
+        - display_name
+        - phone
+        - country
+        - email
+        - brand_relationship
+        - stock_symbol
+        - stock_exchange
+        - website
 
     UseCase:
       description: Use Cases for Campaigns
