@@ -14,19 +14,20 @@ servers:
 
 paths:
   /v1/10DLC/brands:
-    # get:
-    #   tags:
-    #     - Brands
-    #   description: List brands
-    #   operationId: listBrands
-    #   summary: Retrieve all of the brands associated with your account.
-    #   responses:
-    #     '200':
-    #       $ref: '#/components/responses/MultiBrandsResponse'
-    #     '401':
-    #       $ref: "common/common_errors.yml#/components/responses/BadCredentialsError"
-    #     '404':
-    #       $ref: "common/common_errors.yml#/components/responses/NotFoundError"
+    get:
+      tags:
+        - Brands
+      description: List brands
+      operationId: listBrands
+      summary: Retrieve all of the brands associated with your account.
+      responses:
+        '200':
+          $ref: '#/components/responses/MultiBrandsResponse'
+        '401':
+          $ref: "common/common_errors.yml#/components/responses/BadCredentialsError"
+        '404':
+          $ref: "common/common_errors.yml#/components/responses/NotFoundError"
+
     post:
       tags:
         - Brands
