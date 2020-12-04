@@ -601,7 +601,7 @@ components:
         type:
           type: string
           description: Link to error / remediation options
-          example: https://developer.nexmo.com/api-errors/whatsapp-provisioning#not-found
+          example: https://developer.nexmo.com/api-errors#not-found
         title:
           type: string
           description: Generic error message
