@@ -329,7 +329,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorNotFound"
-    put:
+    post:
       description: Replaces profile photo with photo at the given URL for the deployment.
       tags:
         - Profile      
